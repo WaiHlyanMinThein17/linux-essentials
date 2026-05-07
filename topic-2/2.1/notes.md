@@ -104,7 +104,7 @@ echo \$HOME    # → $HOME
 ```
 
 ### Quick Reference
-| Method        | Variable expansion     | Space as separator          |
+| Method        | Variable expansion     | Space as separator          | 
 |---------------|------------------------|-----------------------------|
 | No quotes     | ✅ Yes                 | ✅ Yes (separates args)     |
 | Double quotes | ✅ Yes                 | ❌ No (treated as literal)  |
