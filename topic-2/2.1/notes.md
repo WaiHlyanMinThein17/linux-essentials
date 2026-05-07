@@ -104,12 +104,12 @@ echo \$HOME    # → $HOME
 ```
 
 ### Quick Reference
-| Method        | Variable expansion    | Space as separator        |
-|---------------|-----------------------|---------------------------|
-| No quotes     | ✅ Yes                 | ✅ Yes (separates args)    |
-| Double quotes | ✅ Yes                 | ❌ No (treated as literal) |
-| Single quotes | ❌ No                  | ❌ No                      |
-| Backslash     | ❌ No (next char only) | N/A                       |
+| Method        | Variable expansion     | Space as separator          |
+|---------------|------------------------|-----------------------------|
+| No quotes     | ✅ Yes                 | ✅ Yes (separates args)     |
+| Double quotes | ✅ Yes                 | ❌ No (treated as literal)  |
+| Single quotes | ❌ No                  | ❌ No                       |
+| Backslash     | ❌ No (next char only) | N/A                         |
 
 ## ⚡ Practical Commands
 ```bash
