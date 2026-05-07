@@ -1,90 +1,151 @@
-# 📓 Topic 2.1 Lesson 2 — Variables
+# 📓 Topic 2.2 — Using the Command Line to Get Help
 
 **Course:** LPI Linux Essentials (010-160) · **Date:** May 7, 2026 · **Status:** ✅ Complete
 
-## 📦 Types of Variables
+## 🆘 Ways to Get Help
 
-| Type                 | Scope                            | Inherited by subprocesses? |
-|----------------------|----------------------------------|----------------------------|
-| Local variable       | Current shell only               | ❌ No                      |
-| Environment variable | Current shell + all subprocesses | ✅ Yes                     |
+| Method        | Command           | Detail level                      |
+|---------------|-------------------|-----------------------------------|
+| Built-in help | `command --help`  | Brief — quick overview of options |
+| Man pages     | `man command`     | Full — standard reference         |
+| Info pages    | `info command`    | Most detailed — hypertext format  |
+| Documentation | `/usr/share/doc/` | README, changelogs, examples      |
 
-- Variables are **not persistent** — lost when shell closes
-- To make permanent → add to `~/.bashrc` or `~/.bash_profile`
-- Most environment variables are in UPPERCASE (e.g. PATH, USER, HOME)
-
-## 🔧 Working with Local Variables
+## 📖 Man Pages
 
 ```bash
-greeting=hello           # create local variable (NO spaces around =)
-echo $greeting           # print value → hello
-echo greeting            # prints the word "greeting" (no $)
-bash -c 'echo $greeting' # prints nothing — subprocess can't see local var
+man mkdir          # open man page for mkdir
+man 1 passwd       # open section 1 of passwd man page
+man 5 passwd       # open section 5 of passwd man page
 ```
 
-## 🌍 Working with Environment Variables
+**Navigation inside man pages (uses less internally):**
+
+| Key                  | Action                       |
+|----------------------|------------------------------|
+| `arrow keys / space` | Navigate up and down         |
+| `/searchterm`        | Search forward               |
+| `?searchterm`        | Search backward              |
+| `N`                  | Jump to next match           |
+| `Q`                  | Quit man page                |
+| `H`                  | Show all navigation commands |
+
+## 📋 Man Page Sections (up to 11, most optional)
+
+| Section     | Description                  |
+|-------------|------------------------------|
+| NAME        | Command name and description |
+| SYNOPSIS    | Command syntax               |
+| DESCRIPTION | Effects of the command       |
+| OPTIONS     | Available options            |
+| EXAMPLES    | Sample command lines         |
+| SEE ALSO    | Related topics               |
+| BUGS        | Known limitations            |
+
+## 🔢 Man Page Categories (8 categories)
+
+| Category | Description                     |
+|----------|---------------------------------|
+| 1        | User commands                   |
+| 2        | System calls                    |
+| 3        | C library functions             |
+| 4        | Drivers and device files        |
+| 5        | Configuration files and formats |
+| 6        | Games                           |
+| 7        | Miscellaneous                   |
+| 8        | System administrator commands   |
+
+Example: `passwd(1)` = passwd command · `passwd(5)` = /etc/passwd config file
+
+## 📄 Info Pages
 
 ```bash
-export greeting=hello            # create + export in one step
-export greeting                  # export existing local variable
-bash -c 'echo $greeting'         # now prints hello — subprocess can see it
-env                              # display ALL environment variables
+info mkdir    # open info page for mkdir
 ```
 
-## 🗑️ Removing Variables
+- More detailed than man pages
+- Formatted as hypertext — similar to web pages
+- Structured into nodes within a tree
+- Press Enter on asterisk (*) links to navigate between nodes
+- Press ? inside info to see navigation commands
+
+## 📁 /usr/share/doc/ Directory
+
+- Stores documentation for most installed packages
+- Each package has its own subdirectory
+- Usually contains: README, changelog, example config files
+- All files are plain text — read with any text editor
+
+## 🔍 Locating Files
+
+### locate command
 
 ```bash
-unset greeting    # correct — pass variable NAME (no $)
-unset $greeting   # WRONG — passes the VALUE not the name
+locate filename          # search database for matching files
+locate -l 3 README       # limit results to first 3 matches
+sudo updatedb            # manually refresh the locate database
 ```
 
-- Never use `$` with `unset` or `export` — pass the name, not the value
+- Searches a pre-built database — very fast
+- May miss recently created files — run `sudo updatedb` to fix
+- Behaves as if pattern is surrounded by wildcards by default
+- Database managed by `updatedb` — usually runs periodically
 
-## 🛣️ The PATH Variable
-
-- Most important environment variable in Linux
-- Colon-separated list of directories where Bash searches for executables
-- Order matters — first match found is executed
+### find command
 
 ```bash
-echo $PATH                    # view current PATH
-which nano                    # find where nano executable is stored
-PATH=$PATH:/home/wai/bin      # append new directory to PATH
-PATH=$PATH:$mybin             # append using another variable
+find . -name thesis.pdf       # search current directory
+find ~ -name thesis.pdf       # search home directory recursively
+find ~ -name "*[0-9]"         # find files ending with a number
 ```
 
-## ⚠️ PATH Warning
+- Searches the actual filesystem — always up to date
+- Slower than locate but always current
+- Supports wildcards and regular expressions
+- Requires at least a path argument
+- Not covered in LPI Linux Essentials exam — but useful in practice
 
-- Never do `PATH=/some/dir` alone — this REPLACES the entire PATH
-- Always preserve existing PATH: `PATH=$PATH:/new/dir`
-- Removing the wrong directory from PATH breaks commands
+## 📋 locate vs find
 
-## 🌐 Using Variables with Commands
+| Feature    | locate                  | find                |
+|------------|-------------------------|---------------------|
+| Speed      | Fast (reads database)   | Slower (filesystem) |
+| Up to date | May miss new files      | Always current      |
+| New files  | Run sudo updatedb first | Finds immediately   |
+| LPI exam   | ✅ Covered               | ⚠️ Not in exam     |
 
-```bash
-TZ=EST date    # run date command with a specific timezone
-TZ=GMT date    # variables can be set inline before a command
-```
+## 📋 Useful Commands from Guided Exercises
 
-## 📋 Commands Summary
+| Command   | Purpose                                     |
+|-----------|---------------------------------------------|
+| `cat`     | Concatenate or view text files              |
+| `cp`      | Copy a file                                 |
+| `mv`      | Move or rename a file                       |
+| `rm`      | Delete a file                               |
+| `rm -r`   | Delete directory and contents recursively   |
+| `mkdir`   | Create a new directory                      |
+| `rmdir`   | Delete an empty directory                   |
+| `head`    | Display first few lines of a file           |
+| `tail`    | Display last few lines of a file            |
+| `wc`      | Count words, lines or bytes of a file       |
+| `grep`    | Search within a file                        |
+| `chmod`   | Change file permissions                     |
+| `ls -R`   | List directory contents recursively         |
+| `whereis` | Find path of a program and its manual files |
 
-| Command            | Purpose                                        |
-|--------------------|------------------------------------------------|
-| `var=value`        | Create local variable (no spaces around =)     |
-| `export var=value` | Create environment variable                    |
-| `export var`       | Convert local variable to environment variable |
-| `echo $var`        | Print variable value                           |
-| `unset var`        | Remove a variable (no $ sign)                  |
-| `env`              | Display all environment variables              |
-| `which command`    | Find path of an external command               |
-| `echo $PATH`       | View current PATH                              |
+## ⚠️ Important Note
+
+The `cd` command does NOT have a man page because it is a shell builtin.
+Builtin commands are documented inside the bash man page instead.
+Run `help cd` to see builtin documentation.
 
 ## 🔑 Key Takeaways
 
-- Local variables = current shell only; environment variables = subprocesses too
-- NO spaces around = when creating variables
-- Use `export` to make variables available to subprocesses
-- Use `unset` to remove variables — no $ sign
-- PATH is colon-separated — always append with `$PATH:/new/dir`
-- Variables are not persistent — add to `~/.bashrc` to make permanent
-- `which` finds external command paths; `env` shows all environment variables
+- --help = quick, man = full reference, info = most detailed
+- Man pages have up to 11 sections — most are optional
+- 8 categories: 1=user commands, 5=config files, 8=sysadmin
+- Navigate man with arrow keys, Q to quit, / to search
+- locate = fast (database), find = always current (filesystem)
+- Run sudo updatedb to refresh locate database for new files
+- Shell builtins (cd) don't have man pages — use help instead
+- /usr/share/doc/ contains README and docs for all installed packages
