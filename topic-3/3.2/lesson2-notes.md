@@ -22,7 +22,7 @@ grep "pattern" /dir/            # search in a directory (use -r)
 | `-r`   | Recursive — search all files in directory      | `grep -r "error" /var/log/`  |
 | `-c`   | Count number of matching lines                 | `grep -c "root" /etc/passwd` |
 | `-v`   | Invert — show lines that do NOT match          | `grep -v "bash" /etc/passwd` |
-| `-E`   | Extended regex — enables +, ?, | metacharacters| `grep -E "cat|dog" file`     |
+| `-E`   | Extended regex — enables +, ?, metacharacters  | `grep -E "cat|dog" file`     |
 
 ## 📐 Regular Expression Metacharacters
 
