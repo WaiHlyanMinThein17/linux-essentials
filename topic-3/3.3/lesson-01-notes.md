@@ -198,16 +198,3 @@ numbers or strings:
 | `-lt` | Less than | Numeric |
 | `-le` | Less than or equal | Numeric |
 | `==` | Equal to | String |
-
----
-
-## What I Found Difficult
-
-Write one or two honest sentences here about what genuinely confused
-you or took longer to click. Be specific.
-
----
-
-## Questions Still Open
-
-Anything you want to verify or follow up on later.
