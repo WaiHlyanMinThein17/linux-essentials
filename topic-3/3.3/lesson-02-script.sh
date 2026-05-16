@@ -67,14 +67,13 @@ echo "--- Input validation and for loop ---"
 echo "Validating and greeting: $first $@"
 for username in $first $@
 do 
-    echo $username | grep -E "^[A-Za-z]*$ > /dev/null
-
+    echo $username | grep -E "^[A-Za-z]*$" > /dev/null
     if [ $? -eq 1 ]
     then 
         echo "Error: '$username' contains invalid characters. Letters only."
         exit 2
     else
-        echo "Hello, $username!"
+        echo "Hello $username!"
     fi
 done
 
