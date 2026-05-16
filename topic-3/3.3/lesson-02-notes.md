@@ -1,60 +1,73 @@
-# 📓 Topic 3.3 Lesson 2 — Exit Codes, Loops and Input Validation
+# Topic 3.3 Lesson 2 — Exit Codes, Loops and Input Validation
 
-**Course:** LPI Linux Essentials (010-160) · **Date:** May 8, 2026 · **Status:** ✅ Complete
+**Date:** 2026-05-08  
+**Status:** Complete
 
-## 🚦 Exit Codes
+---
 
-- Every command returns an exit code when it finishes
-- `0` = success
-- Any non-zero = error of some kind
-- Exit code of the last command is stored in `$?`
+## Exit Codes
+
+Every command returns an exit code when it finishes. An exit code of
+zero means the command succeeded. Any non-zero value indicates an
+error of some kind. The exit code of the most recently executed
+command is always stored in `$?`:
 
 ```bash
-cat file.txt          # success
-echo $?               # → 0
+cat file.txt        # file exists, command succeeds
+echo $?             # prints 0
 
-cat missing.txt       # file not found error
-echo $?               # → 1
+cat missing.txt     # file does not exist
+echo $?             # prints 1
 ```
 
-## 🔚 exit in Scripts
+Inside a script, the `exit` command terminates execution immediately
+and returns a code to the calling shell. By convention, zero means
+success, one means a general error, and two means an invalid argument.
+Any line after an `exit` statement will never run:
 
 ```bash
 #!/bin/bash
 if [ $# -eq 1 ]
 then
   echo "Hello $1!"
-  exit 0              # success — script ends here
+  exit 0
 else
   echo "Error: one argument required."
-  exit 1              # failure — script ends here
+  exit 1
 fi
-echo "This line is never reached"
+echo "This line is never reached."
 ```
 
-- `exit 0` = success
-- `exit 1` = general error
-- `exit 2` = invalid argument (convention)
-- `exit` immediately terminates the script — no more lines run
-- Use different exit codes for different errors — helps debugging
+Using distinct exit codes for different failure conditions makes
+scripts easier to debug, because the caller can inspect `$?` and know
+exactly what went wrong.
 
-## 📦 All Arguments — $@ and $*
+---
 
-| Variable     | Contains                                        |
-|--------------|-------------------------------------------------|
-| `$@`         | All arguments as separate elements (preferred)  |
-| `$*`         | All arguments — similar to $@ in most cases     |
-| `$#`         | Number of arguments                             |
-| `$?`         | Exit code of last command                       |
-| `$1, $2...`  | Individual positional arguments                 |
+## Special Variables Reference
 
-```bash
-./script.sh Carol Dave Henry
-# $@ = Carol Dave Henry
-# $1 = Carol, $2 = Dave, $3 = Henry, $# = 3
-```
+| Variable | Contains |
+|----------|----------|
+| `$1` .. `$9` | Individual positional arguments |
+| `$#` | Total number of arguments passed |
+| `$@` | All arguments as separate elements |
+| `$*` | All arguments as a single string |
+| `$?` | Exit code of the last executed command |
+| `$PATH` | Directories Bash searches for commands |
+| `$PWD` | Current working directory |
+| `$USER` | Current username |
+| `$HOME` | Home directory of the current user |
 
-## 🔁 For Loops
+`$@` is preferred over `$*` when iterating because it preserves
+argument boundaries correctly, particularly when arguments contain
+spaces.
+
+---
+
+## For Loops
+
+A for loop processes each element in a list one at a time. Everything
+between `do` and `done` executes once per element:
 
 ```bash
 for username in $@
@@ -63,8 +76,10 @@ do
 done
 ```
 
+The loop variable can be named anything meaningful. A fixed list works
+the same way:
+
 ```bash
-# Loop over a fixed list
 FILES="/usr/sbin/accept /usr/sbin/pwck /usr/sbin/chroot"
 for file in $FILES
 do
@@ -72,98 +87,88 @@ do
 done
 ```
 
-- Loop variable can be named anything — `username`, `file`, `i` etc.
-- Everything between `do` and `done` runs once per element
-- `$@` is like an array — for loop unpacks each element one by one
+---
 
-## ⬅️ shift command
+## The shift Command
+
+`shift` removes the first element from the argument list. After
+shifting, `$1` holds what was previously `$2`, and so on:
 
 ```bash
 ./script.sh Carol Dave Henry
-# Before shift: $@ = Carol Dave Henry
+# $@ is Carol Dave Henry
+
 shift
-# After shift:  $@ = Dave Henry  (Carol removed)
+# $@ is now Dave Henry
+# Carol has been discarded
 ```
 
-- `shift` removes the first element from the argument array
-- `$1` becomes the old `$2`, `$2` becomes old `$3`, etc.
-- Useful when you want to process the first argument separately
+This is useful when the first argument has a special role and you want
+to process the remaining arguments separately with a loop.
 
-## 🔇 echo -n
+---
+
+## echo -n
+
+The `-n` flag suppresses the newline that `echo` normally adds at the
+end of its output. This allows output to be built across multiple echo
+commands on a single line:
 
 ```bash
-echo -n "Hello $1"      # prints without newline at end
-echo -n ", and $name"   # prints on same line
-echo "!"                # prints ! then newline
+echo -n "Hello $1"
+echo -n ", and $name"
+echo "!"
+# prints: Hello Carol, and Dave!
 ```
 
-- `-n` suppresses the newline after printing
-- Useful for building output across multiple echo commands on one line
+---
 
-## ✅ Input Validation with grep
+## Input Validation with grep
+
+grep returns exit code zero when it finds a match and exit code one
+when it does not. This makes it useful for validating user input
+inside scripts. Redirecting output to `/dev/null` suppresses the
+match text so only the exit code matters:
 
 ```bash
-# Test if input contains only letters
 echo "Animal" | grep "^[A-Za-z]*$" > /dev/null
-echo $?    # → 0 (match = valid)
+echo $?    # 0 — input contains only letters, valid
 
 echo "4n1ml" | grep "^[A-Za-z]*$" > /dev/null
-echo $?    # → 1 (no match = invalid)
+echo $?    # 1 — input contains numbers, invalid
 ```
 
-- grep returns `0` if pattern matched, `1` if no match
-- Redirect to `/dev/null` to suppress grep output — only need exit code
-- Check `$?` after grep to make decision in script
+The pattern `^[A-Za-z]*$` means: from the start (`^`) to the end
+(`$`) of the string, match only uppercase and lowercase letters.
+Anything else causes grep to return a non-zero exit code.
 
-## 📋 Full Validation Script Example
+---
+
+## Putting It Together
+
+A complete script combining all concepts from this lesson:
 
 ```bash
 #!/bin/bash
-# Greet users — names must contain only letters
+# Greet one or more users -- names must contain letters only.
 
 if [ $# -eq 0 ]
 then
-  echo "Please enter at least one user to greet."
+  echo "Please enter at least one name to greet."
   exit 1
-else
-  for username in $@
-  do
-    echo $username | grep "^[A-Za-z]*$" > /dev/null
-    if [ $? -eq 1 ]
-    then
-      echo "ERROR: Names must only contain letters."
-      exit 2
-    else
-      echo "Hello $username!"
-    fi
-  done
-  exit 0
 fi
+
+for username in $@
+do
+  echo $username | grep "^[A-Za-z]*$" > /dev/null
+  if [ $? -eq 1 ]
+  then
+    echo "ERROR: $username contains invalid characters. Letters only."
+    exit 2
+  else
+    echo "Hello $username!"
+  fi
+done
+
+exit 0
 ```
-
-## ⚙️ Special Variables Complete Reference
-
-| Variable    | Contains                              |
-|-------------|---------------------------------------|
-| `$1 .. $9`  | Positional arguments                  |
-| `$#`        | Number of arguments passed            |
-| `$@`        | All arguments as array (preferred)    |
-| `$*`        | All arguments as single string        |
-| `$?`        | Exit code of last executed command    |
-| `$PATH`     | Directories searched for commands     |
-| `$PWD`      | Current working directory             |
-| `$USER`     | Current username                      |
-| `$HOME`     | Home directory of current user        |
-
-## 🔑 Key Takeaways
-
-- Exit code 0 = success, non-zero = error — stored in `$?`
-- `exit N` terminates script immediately with exit code N
-- Use different exit codes for different errors — aids debugging
-- `$@` contains all arguments — use with for loop to process each one
-- for loop: `for var in $@; do ... done`
-- `shift` removes first element from argument array
-- `echo -n` suppresses newline — useful for single-line output
-- grep returns exit code 0 for match, 1 for no match — use for input validation
-- Redirect grep output to `/dev/null` when you only need its exit code
-- Always validate user input before using it in scripts
