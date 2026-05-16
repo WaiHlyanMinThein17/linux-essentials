@@ -1,53 +1,72 @@
-# 📓 Topic 1.1 — Linux Evolution and Popular Operating Systems
+# Topic 1.1 — Linux Evolution and Popular Operating Systems
 
-**Course:** LPI Linux Essentials (010-160) · **Date:** May 5, 2026 · **Status:** ✅ Complete
+**Date:** 2026-05-05  
+**Status:** Complete
 
-## 🐧 What is Linux?
-- Created by **Linus Torvalds** in **1991** as a student at University of Helsinki
-- Inspired by **Unix** — an OS developed by AT&T in the 1970s
-- Linux does NOT contain Unix code — it is an independent project
-- Not backed by one company — maintained by an international community
-- Freely available with no restrictions
+---
 
-## 📦 Linux Distributions
-A distribution = Linux kernel + selection of applications maintained by a company or community
+## What is Linux?
 
-### Debian Family (uses .deb packages, dpkg/apt)
-- **Debian GNU/Linux** — founded by Ian Murdock in 1993, very stable, no proprietary software
-- **Ubuntu** — created by Mark Shuttleworth in 2004, easy to use, releases every 6 months, LTS every 2 years
+Linux is an open source operating system kernel created by Linus Torvalds
+in 1991 while studying at the University of Helsinki. It was inspired by
+Unix, an OS developed at AT&T in the 1970s, but contains no Unix code
+and was built independently.
 
-### Red Hat Family (uses .rpm packages, yum/dnf)
-- **RHEL** — Red Hat Enterprise Linux, enterprise solution, requires paid subscription
-- **CentOS** — free version of RHEL source code, no commercial support
-- **Fedora** — desktop focused, progressive, test-bed for new RHEL technologies
+Unlike commercial operating systems, Linux is not controlled by a single
+company. It is maintained by an international community and is freely
+available without restrictions.
 
-### SUSE Family
-- **SUSE Linux Enterprise Server** — commercial edition
-- **openSUSE** — free version, known for **YaST** configuration tool
+---
 
-## 📱 Embedded Systems
-- Embedded systems = hardware + software for a specific function within a larger system
-- Used in automotive, medical, military applications
-- **Android** — based on modified Linux kernel, originally designed for digital cameras (2003), acquired by Google in 2005
-- **Raspbian** — Debian-based OS for Raspberry Pi
+## Linux Distributions
 
-## 🍓 Raspberry Pi
-- Low cost, credit-card sized computer
-- Developed by Raspberry Pi Foundation (UK educational charity)
-- Uses **ARM processors**
-- Boots OS from **SD card** (no hard disk)
-- Has GPIO pins for hardware development
+A Linux distribution combines the Linux kernel with a curated set of
+applications and tools, maintained by either a company or a community.
+The three main families differ primarily in their package management systems.
 
-## ☁️ Linux and the Cloud
-- Linux runs **90% of public cloud workloads** (as of 2017)
-- Every major cloud provider (AWS, GCP, Azure) offers Linux
-- Used in IaaS (Infrastructure as a Service) model
-- Cloud providers offer images of popular Linux distributions
+**Debian family** uses .deb packages managed with dpkg and apt.
+Debian GNU/Linux was founded by Ian Murdock in 1993 and prioritizes
+stability and free software. Ubuntu, created by Mark Shuttleworth in 2004,
+builds on Debian with a focus on usability. It releases every six months
+with a Long Term Support (LTS) release every two years.
 
-## 🔑 Key Takeaways
-- Linux kernel created by Linus Torvalds in 1991
-- A distribution = kernel + apps + tools
-- Debian family = .deb packages
-- Red Hat family = .rpm packages
-- Android is Linux-based
-- Linux powers 90% of the cloud
+**Red Hat family** uses .rpm packages managed with yum or dnf.
+Red Hat Enterprise Linux (RHEL) is a commercial product requiring a paid
+subscription. Fedora is the community-driven upstream project that tests
+new technologies before they reach RHEL. CentOS was a free rebuild of
+RHEL source code, though its role has since changed significantly.
+
+**SUSE family** also uses .rpm packages. SUSE Linux Enterprise Server is
+the commercial edition, while openSUSE is the free community version,
+notable for its YaST system configuration tool.
+
+---
+
+## Embedded Systems and Android
+
+Embedded systems combine hardware and software to perform a specific
+function within a larger device. They appear in automotive, medical, and
+military applications. Android, which runs on a modified Linux kernel,
+was originally developed for digital cameras in 2003 before Google
+acquired it in 2005 and redirected it toward mobile devices.
+
+Raspbian (now Raspberry Pi OS) is a Debian-based distribution built for
+the Raspberry Pi, a low-cost, credit-card sized computer developed by
+a UK educational charity. It uses ARM processors and boots from an SD
+card rather than a traditional hard disk.
+
+---
+
+## Linux and the Cloud
+
+As of 2017, Linux runs approximately 90% of public cloud workloads.
+Every major provider, AWS, GCP, and Azure, offers Linux instances.
+This makes Linux fluency effectively a prerequisite for any cloud or
+infrastructure engineering role.
+
+---
+
+## What I Found Difficult
+
+This lesson is straightforward and easy to understand. However, it
+takes some time to remember all three distribution families and their histories.
