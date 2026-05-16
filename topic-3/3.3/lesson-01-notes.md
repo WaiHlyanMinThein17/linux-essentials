@@ -1,112 +1,150 @@
-# 📓 Topic 3.3 Lesson 1 — Turning Commands into a Script
+# Topic 3.3 Lesson 1 — Turning Commands into a Script
 
-**Course:** LPI Linux Essentials (010-160) · **Date:** May 8, 2026 · **Status:** ✅ Complete
+**Date:** 2026-05-08  
+**Status:** Complete
 
-## 📜 What is a Script?
+---
 
-- A text file containing commands that run one after another when executed
-- Bash is both a shell AND a programming language
-- Scripts automate repetitive tasks — essential for Linux administrators
-- Convention: save bash scripts with `.sh` or `.bash` extension
+## What is a Script?
 
-## 🚀 Creating and Running a Script
+A script is a plain text file containing a sequence of commands that
+the shell executes in order. Bash functions as both an interactive
+shell and a programming language, which means the same commands you
+type at the prompt can be saved into a file and run repeatedly without
+retyping them.
+
+Scripts are the primary way Linux administrators automate repetitive
+tasks. By convention, Bash scripts use the `.sh` or `.bash` extension,
+though Linux does not require this to execute them.
+
+---
+
+## The Shebang Line
+
+Every Bash script should begin with a shebang on the first line:
 
 ```bash
-# Step 1 — create the script file
+#!/bin/bash
+```
+
+The `#!` characters tell the operating system which interpreter to use
+when running the file. The path that follows must be absolute. To
+confirm the correct path on your system, run `which bash`. Other
+interpreters follow the same pattern, for example `#!/usr/bin/python3`
+for Python scripts.
+
+---
+
+## Making a Script Executable
+
+A script file must be marked executable before it can be run. The
+three steps to create and run a basic script are:
+
+```bash
+# Create the file
 echo 'echo "Hello World!"' > new_script.sh
 
-# Step 2 — make it executable
+# Grant execute permission
 chmod +x new_script.sh
 
-# Step 3 — run it using ./
+# Run it
 ./new_script.sh
 ```
 
-- Scripts must be executable — use `chmod +x`
-- Use `./` prefix to run from current directory (not in PATH)
-- Or add script directory to PATH to run without `./`
+The `./` prefix is required when running a script from the current
+directory because Bash only searches directories listed in `$PATH` by
+default, and the current directory is not included. Without `./`, Bash
+reports "command not found" even if the file exists right there.
 
-## 🔧 Why ./ is needed
+To run scripts without `./`, add their directory to `$PATH`:
 
-- Bash searches PATH directories for commands — current dir NOT in PATH by default
-- Without `./`: "command not found" error
-- With `./`: tells bash to look in the current directory
-- To add current dir to PATH: `PATH=$PATH:~/scripts`
+```bash
+PATH=$PATH:~/scripts
+```
 
-## 🔑 The Shebang Line
+---
+
+## Comments
+
+Comments begin with `#` and are ignored by the interpreter. They exist
+for human readers. Inline comments are also valid:
 
 ```bash
 #!/bin/bash
+# This script greets a user
+echo "Hello World!"   # prints to standard output
 ```
 
-- First line of every script — tells OS which interpreter to use
-- Starts with `#!` (hash + exclamation = "shebang")
-- Followed by absolute path to the interpreter
-- Find interpreter path with: `which bash` → `/bin/bash`
-- Other examples: `#!/usr/bin/python3`, `#!/usr/bin/perl`
+Documenting scripts with comments is standard practice, particularly
+when others may read or maintain your code.
 
-## 💬 Comments
+---
+
+## Text Editors
+
+Two editors appear consistently in Linux environments:
+
+| Editor | Style | Learning curve | Notes |
+|--------|-------|----------------|-------|
+| vim | Modal | Steep | Available on nearly every system |
+| nano | Modeless | Gentle | Shows shortcuts at the bottom of the screen |
+
+Vim operates in three modes. It opens in normal mode for navigation.
+Pressing `i` enters insert mode for typing. Pressing `Esc` returns to
+normal mode. Typing `:` enters command mode for saving and quitting,
+for example `:wq` to write and quit.
+
+Nano uses `Ctrl+O` to save, `Ctrl+X` to exit, and `Ctrl+W` to search.
+
+---
+
+## Variables
+
+Variables store values for reuse throughout a script. The assignment
+syntax requires no spaces around the equals sign:
 
 ```bash
 #!/bin/bash
-# This is a comment — ignored by the interpreter
-# Always comment your scripts for other users
-echo "Hello World!"   # inline comment also works
+username=Carol
+greeting="Hello there"
+echo "Hello $username!"
+echo "Hello ${username}!"   # braces are optional but clearer
 ```
 
-- Comments start with `#`
-- Ignored by Bash — for human readers only
-- Always document your scripts — it is best practice
+| Rule | Detail |
+|------|--------|
+| No spaces around `=` | `name=Carol` works, `name = Carol` fails |
+| Case sensitive | `username` and `Username` are different variables |
+| Valid characters | Letters, numbers, and underscores only |
+| Default type | Variables are strings unless treated otherwise |
 
-## ✏️ Text Editors
+---
 
-| Editor   | Style           | Learning curve | Key notes                               |
-|----------|-----------------|----------------|-----------------------------------------|
-| vi / vim | Modal (3 modes) | Steep          | Available everywhere, very powerful     |
-| nano     | Modeless        | Easy           | Beginner friendly, Ctrl shortcuts shown |
+## Quote Behavior
 
-**vi modes:** Navigation (default) → `i` = Insert mode → `Esc` = back to Navigation → `:` = Command mode (save/quit)
+How Bash handles variables depends on the type of quotes used:
 
-**nano shortcuts:** `Ctrl+O` = save, `Ctrl+X` = exit, `Ctrl+W` = search
+| Quote type | Variable expansion | Example result |
+|------------|--------------------|----------------|
+| Double `" "` | Yes | `"Hello $name"` becomes `Hello Carol` |
+| Single `' '` | No | `'Hello $name'` stays `Hello $name` |
 
-## 📦 Variables in Scripts
+Use double quotes when you want the variable's value. Use single
+quotes when you want the literal text including the dollar sign.
 
-```bash
-#!/bin/bash
-username=Carol             # no spaces around =
-greeting="Hello there"    # use quotes for values with spaces
-echo "Hello $username!"   # $ accesses variable value
-echo "Hello ${username}!" # alternative syntax with {}
-```
+---
 
-| Rule                           | Detail                              |
-|--------------------------------|-------------------------------------|
-| No spaces around =             | `name=Carol` ✅ — `name = Carol` ❌ |
-| Case sensitive                 | `username` ≠ `Username`             |
-| Only alphanumeric + underscore | `my_var` ✅ — `my-var` ❌           |
-| Variables are strings          | Math requires special syntax        |
+## Script Arguments
 
-## 🔤 Quotes with Variables
+Arguments passed to a script at runtime are stored in positional
+variables:
 
-| Quote type          | Variable expansion? | Example                        |
-|---------------------|---------------------|--------------------------------|
-| Double quotes `" "` | ✅ Yes — "weak"      | `"Hello $name"` → Hello Carol |
-| Single quotes `' '` | ❌ No — "strong"     | `'Hello $name'` → Hello $name |
-
-```bash
-username="Carol Smith"    # quotes needed for values with spaces
-echo "Hello $username!"   # → Hello Carol Smith!
-echo 'Hello $username!'   # → Hello $username! (literal)
-```
-
-## 📥 Script Arguments
-
-| Variable | Contains                           |
-|----------|------------------------------------|
-| `$1`     | First argument passed to script    |
-| `$2`     | Second argument                    |
-| `$9`     | Ninth argument (max direct access) |
-| `$#`     | Total number of arguments passed   |
+| Variable | Contains |
+|----------|----------|
+| `$1` | First argument |
+| `$2` | Second argument |
+| `$9` | Ninth argument |
+| `$#` | Total number of arguments passed |
 
 ```bash
 #!/bin/bash
@@ -116,12 +154,18 @@ echo "Number of arguments: $#."
 ```
 
 ```bash
-./script.sh Carol         # $1=Carol, $#=1
-./script.sh Carol Dave    # $1=Carol, $2=Dave, $#=2
-./script.sh               # $1="", $#=0 — no error, just empty
+./script.sh Carol          # $1=Carol, $#=1
+./script.sh Carol Dave     # $1=Carol, $2=Dave, $#=2
+./script.sh                # $1 is empty, $#=0, no error
 ```
 
-## 🔀 Conditional Logic — if statements
+---
+
+## Conditional Logic
+
+Bash uses `if/then/else/fi` blocks for conditional execution. The
+condition sits inside square brackets with a required space on each
+inner side:
 
 ```bash
 #!/bin/bash
@@ -135,62 +179,35 @@ fi
 echo "Number of arguments: $#."
 ```
 
-- Condition between `[ ]` — spaces inside brackets required
-- `if` → `then` → `else` → `fi` (closes the if block)
-- `elif` adds a second condition to check
+Adding `elif` tests a second condition before falling through to
+`else`.
 
-## 🔢 Numerical Comparison Operators
+---
 
-| Operator | Meaning               | Example          |
-|----------|-----------------------|------------------|
-| `-eq`    | Equal to              | `[ $# -eq 1 ]`   |
-| `-ne`    | Not equal to          | `[ $# -ne 2 ]`   |
-| `-gt`    | Greater than          | `[ $1 -gt $2 ]`  |
-| `-ge`    | Greater than or equal | `[ $1 -ge 0 ]`   |
-| `-lt`    | Less than             | `[ $1 -lt 10 ]`  |
-| `-le`    | Less than or equal    | `[ $1 -le 100 ]` |
+## Comparison Operators
 
-Use `==` for **string** comparison: `[ "$1" == "$PWD" ]`
+Bash uses different operators depending on whether you are comparing
+numbers or strings:
 
-## 📋 Complete Script Example
+| Operator | Meaning | Type |
+|----------|---------|------|
+| `-eq` | Equal to | Numeric |
+| `-ne` | Not equal to | Numeric |
+| `-gt` | Greater than | Numeric |
+| `-ge` | Greater than or equal | Numeric |
+| `-lt` | Less than | Numeric |
+| `-le` | Less than or equal | Numeric |
+| `==` | Equal to | String |
 
-```bash
-#!/bin/bash
-# A simple greeting script with argument checking
+---
 
-if [ $# -eq 1 ]
-then
-  username=$1
-  echo "Hello $username!"
-elif [ $# -eq 2 ]
-then
-  echo "Hello $1 and $2!"
-else
-  echo "Usage: ./script.sh name [name2]"
-fi
-echo "Number of arguments: $#."
-```
+## What I Found Difficult
 
-## ⚙️ Special Variables Summary
+Write one or two honest sentences here about what genuinely confused
+you or took longer to click. Be specific.
 
-| Variable   | Contains                          |
-|------------|-----------------------------------|
-| `$1 .. $9` | Positional arguments              |
-| `$#`       | Number of arguments               |
-| `$PATH`    | Directories searched for commands |
-| `$PWD`     | Current working directory         |
-| `$USER`    | Current username                  |
-| `$HOME`    | Current user's home directory     |
+---
 
-## 🔑 Key Takeaways
+## Questions Still Open
 
-- Scripts are executable text files — use `chmod +x` to make executable
-- Run with `./script.sh` — current dir is not in PATH by default
-- Always start with shebang: `#!/bin/bash`
-- Comments start with `#` — document everything
-- Variables: no spaces around =, case sensitive, strings by default
-- Double quotes allow variable expansion, single quotes prevent it
-- `$1, $2...` = positional args, `$#` = number of args
-- if/then/else/fi syntax — spaces required inside `[ ]`
-- Numerical operators: -eq, -ne, -gt, -ge, -lt, -le
-- String comparison: == inside [ ]
+Anything you want to verify or follow up on later.
