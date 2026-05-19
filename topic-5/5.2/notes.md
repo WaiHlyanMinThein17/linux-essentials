@@ -142,13 +142,11 @@ Each line in `/etc/shadow` has eight colon-separated fields:
 
 ---
 
-## What I Found Difficult
-
-Write one or two honest sentences about what genuinely took longer
-to understand. Be specific about what confused you and how it clicked.
-
----
-
 ## Questions Still Open
 
-Anything you want to verify or follow up on later.
+Ubuntu 24.04 used $y$ as the password hash prefix instead of the
+$6$ (SHA-512) listed in the LPI materials. After investigating,
+$y$ is the yescrypt algorithm, which is newer and stronger than
+SHA-512. Ubuntu switched to it as the default in recent releases.
+The LPI exam materials may still reference $6$ as the preferred
+algorithm since they predate this change.
