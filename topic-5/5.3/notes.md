@@ -1,175 +1,186 @@
-# 📓 Topic 5.3 — Managing File Permissions and Ownership
+# Topic 5.3 — Managing File Permissions and Ownership
 
-**Course:** LPI Linux Essentials (010-160) · **Date:** May 8, 2026 · **Status:** ✅ Complete
+**Date:** 2026-05-19  
+**Status:** Complete
 
-## 📋 ls -l Output — Reading Permissions
+---
 
-```
-drwxrwxr-x 2 carol carol 4096 Dec 10 15:57 Another_Directory
--rw------- 1 carol carol 539663 Dec 10 10:43 picture.jpg
-```
+## Reading ls -l Output
 
-| Column   | Meaning                                                      |
-|----------|--------------------------------------------------------------|
-| 1st char | File type (- file, d dir, l symlink, b block, c char, s socket)|
-| Chars 2-4| Owner (user) permissions                                     |
-| Chars 5-7| Group permissions                                            |
-| Chars 8-10| Others permissions                                          |
-| 2nd col  | Number of hard links                                         |
-| 3rd col  | Owner (username)                                             |
-| 4th col  | Owning group                                                 |
-| 5th col  | File size in bytes                                           |
-| 6th col  | Last modification timestamp                                  |
-| 7th col  | Filename                                                     |
+The `ls -l` command displays detailed file information in a structured
+format. Each line represents one file or directory:
 
 ```bash
-ls -l           # long listing
-ls -lh          # human readable sizes (K, M, G)
-ls -la          # include hidden files (. prefix)
-ls -ld dir/     # show directory info, not contents
+drwxrwxr-x 2 carol carol 4096 Dec 10 15:57 Another_Directory
+-rw------- 1 carol carol  539663 Dec 10 10:43 picture.jpg
 ```
 
-## 📁 File Types (first character of ls -l)
+| Column | Meaning |
+|--------|---------|
+| Character 1 | File type |
+| Characters 2-4 | Owner permissions |
+| Characters 5-7 | Group permissions |
+| Characters 8-10 | Others permissions |
+| Column 2 | Number of hard links |
+| Column 3 | Owner username |
+| Column 4 | Owning group |
+| Column 5 | File size in bytes |
+| Column 6 | Last modification timestamp |
+| Column 7 | Filename |
 
-| Char | Type                               |
-|------|------------------------------------|
-| `-`  | Regular file                       |
-| `d`  | Directory                          |
-| `l`  | Symbolic link (soft link)          |
-| `b`  | Block device (disks, storage)      |
-| `c`  | Character device (terminals)       |
-| `s`  | Socket                             |
+The first character identifies the file type:
 
-## 🔑 Permission Meanings
+| Character | Type |
+|-----------|------|
+| `-` | Regular file |
+| `d` | Directory |
+| `l` | Symbolic link |
+| `b` | Block device |
+| `c` | Character device |
+| `s` | Socket |
 
-| Permission   | Octal | On Files                  | On Directories                        |
-|--------------|-------|---------------------------|---------------------------------------|
-| `r` (read)   | 4     | Open and read file        | List directory contents (filenames)   |
-| `w` (write)  | 2     | Edit or delete file       | Create, delete or rename files inside |
-| `x` (execute)| 1     | Run as executable/script  | Enter (cd into) the directory         |
-| `-` (none)   | 0     | No permission             | No permission                         |
+---
 
-- Permissions checked in order: owner first, then group, then others
-- If you're the owner, only owner permissions apply — even if group/others are more permissive
+## Permission Meanings
 
-## ✏️ chmod — Symbolic Mode
+Each of the three permission sets contains three characters
+representing read, write, and execute:
 
-Format: `chmod [who][+/-/=][permissions] file`
+| Permission | Octal | On files | On directories |
+|------------|-------|----------|----------------|
+| `r` read | 4 | Open and read the file | List directory contents |
+| `w` write | 2 | Edit or delete the file | Create, delete, or rename files inside |
+| `x` execute | 1 | Run as a program or script | Enter the directory with cd |
+| `-` none | 0 | No permission | No permission |
 
-| Who | Meaning                    |
-|-----|----------------------------|
-| `u` | User (owner)               |
-| `g` | Group                      |
-| `o` | Others                     |
-| `a` | All (user + group + others)|
+Permissions are checked in a specific order: owner first, then group,
+then others. The first matching category applies and the rest are
+ignored. This means if you are the owner, only the owner permissions
+apply, even if the group or others permissions are more permissive.
 
-| Operator | Meaning             |
-|----------|---------------------|
-| `+`      | Add permission      |
-| `-`      | Remove permission   |
-| `=`      | Set exactly         |
+---
+
+## Changing Permissions with chmod
+
+chmod accepts two modes: symbolic and numeric.
+
+**Symbolic mode** modifies specific permissions without affecting
+others. The format is `chmod [who][operator][permissions] file`:
+
+| Who | Applies to |
+|-----|------------|
+| `u` | Owner |
+| `g` | Group |
+| `o` | Others |
+| `a` | Everyone |
+
+| Operator | Effect |
+|----------|--------|
+| `+` | Add permission |
+| `-` | Remove permission |
+| `=` | Set exactly, replacing existing |
 
 ```bash
 chmod g+w file.txt          # add write for group
-chmod u-r file.txt          # remove read for owner
+chmod u-r file.txt          # remove read from owner
 chmod a=rw file.txt         # set exactly rw for everyone
-chmod u+rwx,g-x file.txt    # combine with comma
-chmod -R u+rwx dir/         # recursive — all files in directory
+chmod u+rwx,g-x file.txt    # combine multiple changes
+chmod -R u+rwx dir/         # apply recursively
 ```
 
-## 🔢 chmod — Numeric Mode
-
-Each permission set = sum of: r=4, w=2, x=1, -=0
+**Numeric mode** sets all three permission groups at once using
+the sum of r=4, w=2, x=1 for each group:
 
 | Number | Permissions |
 |--------|-------------|
-| 7      | rwx (4+2+1) |
-| 6      | rw- (4+2+0) |
-| 5      | r-x (4+0+1) |
-| 4      | r-- (4+0+0) |
-| 3      | -wx (0+2+1) |
-| 2      | -w- (0+2+0) |
-| 1      | --x (0+0+1) |
-| 0      | --- (none)  |
+| 7 | rwx |
+| 6 | rw- |
+| 5 | r-x |
+| 4 | r-- |
+| 3 | -wx |
+| 2 | -w- |
+| 1 | --x |
+| 0 | --- |
 
 ```bash
 chmod 755 file    # rwxr-xr-x
 chmod 644 file    # rw-r--r--
-chmod 660 file    # rw-rw----
 chmod 600 file    # rw-------
-chmod 777 file    # rwxrwxrwx
+chmod 660 file    # rw-rw----
 ```
 
-- If permission value is odd → file is executable
-- Numeric mode: set all permissions at once
-- Symbolic mode: flip a single permission without touching others
+A useful shortcut: if the numeric value for a permission set is odd,
+the file is executable. Use symbolic mode when you want to flip one
+permission without touching the rest. Use numeric mode when you want
+to set all permissions at once precisely.
 
-## 👤 chown / chgrp — Changing Ownership
+---
+
+## Common Permission Patterns
+
+| Octal | Symbolic | Typical use |
+|-------|----------|-------------|
+| 755 | rwxr-xr-x | Directories, public executables |
+| 644 | rw-r--r-- | Regular files, config files |
+| 600 | rw------- | Private files such as SSH keys |
+| 700 | rwx------ | Private scripts and directories |
+| 660 | rw-rw---- | Files shared within a group |
+| 1777 | rwxrwxrwt | /tmp, world writable with sticky bit |
+
+---
+
+## Changing Ownership with chown and chgrp
 
 ```bash
 chown carol file.txt              # change owner to carol
-chown carol:students file.txt     # change owner AND group
+chown carol:students file.txt     # change owner and group together
 chown :students file.txt          # change group only
-chgrp students file.txt           # change group only (alternative)
+chgrp students file.txt           # change group only, alternative syntax
 sudo chown -R carol:users dir/    # recursive ownership change
 ```
 
-- Only root can change ownership of files owned by others
-- User must be member of group to transfer group ownership to it
+Only root can change ownership of files belonging to other users.
+A user can only transfer group ownership to a group they already
+belong to.
 
-## 👥 Querying Groups
+---
 
-```bash
-groups                       # show current user's groups
-groups carol                 # show groups carol belongs to
-sudo groupmems -g cdrom -l   # show members of a group
-```
+## Special Permissions
 
-## ⭐ Special Permissions
+Three special permission bits extend the standard model:
 
-| Name       | Octal | Symbolic         | Applies to        | Effect                                              |
-|------------|-------|------------------|-------------------|-----------------------------------------------------|
-| Sticky Bit | 1     | `t` in others    | Directories only  | Only file owner can delete/rename their own files   |
-| SGID       | 2     | `s` in group     | Files + Dirs      | Files: run with group privileges. Dirs: new files inherit parent group |
-| SUID       | 4     | `s` in user      | Files only        | Run with owner's privileges (e.g. passwd runs as root) |
+**Sticky bit** applies to directories. When set, only the file's
+owner can delete or rename their own files inside that directory,
+even if others have write permission. The `/tmp` directory uses
+this so all users can write temporary files but cannot delete each
+other's files:
 
 ```bash
-chmod +t dir/              # set sticky bit
-chmod g+s dir/             # set SGID on directory
-chmod u+s file             # set SUID on file
-chmod 1755 dir/            # sticky bit + rwxr-xr-x
-chmod 2755 dir/            # SGID + rwxr-xr-x
-chmod 4755 file            # SUID + rwxr-xr-x
-chmod 6755 file            # SUID + SGID + rwxr-xr-x
-chmod 0755 file            # remove all special bits
+chmod +t dir/       # set sticky bit
+chmod 1755 dir/     # numeric: sticky + rwxr-xr-x
 ```
 
-- Lowercase `s` or `t` = special bit set AND execute permission present
-- Uppercase `S` or `T` = special bit set BUT execute permission NOT set
-- /tmp uses sticky bit (drwxrwxrwt) — anyone can write but only owner can delete their files
+**SGID** on a directory causes new files created inside to inherit
+the directory's group rather than the creating user's primary group.
+This is useful for shared project directories where all files should
+belong to the same group automatically:
 
-## 📋 Common Permission Patterns
+```bash
+chmod g+s dir/      # set SGID on directory
+chmod 2755 dir/     # numeric: SGID + rwxr-xr-x
+```
 
-| Octal | Symbolic    | Typical use                          |
-|-------|-------------|--------------------------------------|
-| 755   | rwxr-xr-x   | Directories, public executables      |
-| 644   | rw-r--r--   | Regular files, config files          |
-| 600   | rw-------   | Private files (SSH keys)             |
-| 700   | rwx------   | Private scripts/directories          |
-| 660   | rw-rw----   | Shared files within a group          |
-| 1777  | rwxrwxrwt   | /tmp — world writable + sticky bit   |
+**SUID** on an executable file causes it to run with the owner's
+privileges rather than the calling user's. The `passwd` command uses
+this so regular users can write to `/etc/shadow`, which is otherwise
+root-only:
 
-## 🔑 Key Takeaways
+```bash
+chmod u+s file      # set SUID on file
+chmod 4755 file     # numeric: SUID + rwxr-xr-x
+```
 
-- Every file has owner (u), group (g) and others (o) permissions
-- Permissions checked in order: owner → group → others. First match wins.
-- r=4, w=2, x=1, -=0 — add them to get the octal value
-- chmod symbolic: u/g/o/a + +/-/= + r/w/x
-- chmod numeric: 3 (or 4) digit octal — first digit = special permissions
-- chown changes owner, chgrp changes group, chown user:group changes both
-- Sticky bit (t) on dirs — only owner can delete their own files
-- SGID (s on group) on dirs — new files inherit parent directory's group
-- SUID (s on user) on files — runs with owner's privileges (like passwd)
-- Uppercase S or T = special bit set but no execute permission
-- Use -R for recursive chmod/chown
-- Odd numeric permission value → file is executable
+In `ls -l` output, a lowercase `s` or `t` means the special bit is
+set and execute permission is also present. An uppercase `S` or `T`
+means the special bit is set but execute permission is absent, which
+is usually a configuration mistake.
