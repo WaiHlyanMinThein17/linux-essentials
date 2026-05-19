@@ -1,144 +1,154 @@
-# 📓 Topic 5.2 — Creating Users and Groups
+# Topic 5.2 — Creating Users and Groups
 
-**Course:** LPI Linux Essentials (010-160) · **Date:** May 8, 2026 · **Status:** ✅ Complete
+**Date:** 2026-05-08  
+**Status:** Complete
 
-## 👤 Adding Users — useradd
+---
+
+## Creating Users with useradd
+
+`useradd` creates a new user account. It requires root privileges and
+accepts several options to configure the account at creation time:
 
 ```bash
-sudo useradd frank                          # create user with defaults
-sudo useradd -m frank                       # create user with home directory
-sudo useradd -m -u 1050 -g 1000 frank       # custom UID and primary GID
-sudo useradd -m -s /bin/zsh frank           # custom shell
-sudo useradd -m -c "Frank Smith" frank      # with GECOS comment
-sudo useradd -m -G web_admin,db_admin frank # with secondary groups
-sudo passwd frank                           # set password after creating
+sudo useradd frank                           # create with defaults
+sudo useradd -m frank                        # create with home directory
+sudo useradd -m -u 1050 -g 1000 frank        # custom UID and primary GID
+sudo useradd -m -s /bin/zsh frank            # custom login shell
+sudo useradd -m -c "Frank Smith" frank       # with GECOS comment
+sudo useradd -m -G web_admin,db_admin frank  # with secondary groups
+sudo passwd frank                            # set password after creating
 ```
 
-## ⚙️ useradd Key Options
+| Option | Purpose |
+|--------|---------|
+| `-m` | Create home directory |
+| `-M` | Do not create home directory |
+| `-u UID` | Specify a custom UID |
+| `-g GID` | Set primary group by GID or name |
+| `-G group1,group2` | Add to secondary groups |
+| `-s /bin/bash` | Set login shell |
+| `-c "comment"` | Set GECOS comment field |
+| `-d /path` | Set custom home directory path |
+| `-e YYYY-MM-DD` | Set account expiration date |
+| `-f days` | Days after password expires before account is disabled |
 
-| Option             | Purpose                                       |
-|--------------------|-----------------------------------------------|
-| `-m`               | Create home directory                         |
-| `-M`               | Do NOT create home directory                  |
-| `-u UID`           | Specify custom UID                            |
-| `-g GID`           | Set primary group (by GID or name)            |
-| `-G group1,group2` | Add to secondary groups (comma separated)     |
-| `-s /bin/bash`     | Set login shell                               |
-| `-c "comment"`     | Set GECOS comment field                       |
-| `-d /path`         | Custom home directory path                    |
-| `-e YYYY-MM-DD`    | Set account expiration date                   |
-| `-f days`          | Days after password expires before disabled   |
+New accounts are locked by default until a password is set with
+`passwd`. Default values for new accounts are configured in
+`/etc/login.defs`.
 
-- New user account is **locked** by default until password is set with `passwd`
-- Requires root/sudo privileges
-- Config defaults in `/etc/login.defs`
+---
 
-## 🗑️ Deleting Users — userdel
+## Deleting Users with userdel
 
 ```bash
-sudo userdel frank       # delete user (keeps home directory)
-sudo userdel -r frank    # delete user AND home directory AND mail spool
+sudo userdel frank      # delete account, keep home directory
+sudo userdel -r frank   # delete account and home directory and mail spool
 ```
 
-- Other files owned by the user elsewhere must be found and deleted manually
+Files owned by the deleted user that exist outside their home
+directory are not removed automatically. They must be found and
+deleted manually.
 
-## 👥 Adding Groups — groupadd
+---
+
+## Creating and Deleting Groups
 
 ```bash
-sudo groupadd developer           # create group (auto GID)
+sudo groupadd developer           # create group with automatic GID
 sudo groupadd -g 1090 developer   # create group with specific GID
+sudo groupdel developer           # delete a group
 ```
 
-## 🗑️ Deleting Groups — groupdel
+A group cannot be deleted if it is the primary group of any existing
+user. Both primary and secondary groups must exist on the system
+before running `useradd` with the `-g` or `-G` options.
 
-```bash
-sudo groupdel developer           # delete group
-```
+---
 
-- Cannot delete a group that is the primary group of a user
-- Primary and secondary groups must exist BEFORE running useradd
-
-## 🔒 passwd Command
+## Managing Passwords with passwd
 
 ```bash
 passwd                    # change your own password
-sudo passwd frank         # change another user's password (root only)
-sudo passwd -l frank      # lock account (adds ! prefix to hash)
-sudo passwd -u frank      # unlock account (removes ! prefix)
-sudo passwd -d frank      # delete password (passwordless account)
+sudo passwd frank         # change another user's password
+sudo passwd -l frank      # lock account
+sudo passwd -u frank      # unlock account
+sudo passwd -d frank      # delete password, makes account passwordless
 sudo passwd -e frank      # force password change at next login
-sudo passwd -S frank      # show password status info
+sudo passwd -S frank      # show password status
 ```
 
-- Any user can change their own password
-- Only root can change another user's password
-- passwd has SUID bit set — runs as root even when called by regular user
+Any user can change their own password. Only root can change another
+user's password. The `passwd` binary has the SUID bit set, which
+means it runs as root even when called by a regular user. This is
+what allows the command to write to `/etc/shadow`, which is
+otherwise root-only.
 
-## 🏠 Skeleton Directory — /etc/skel
+Locking an account adds a `!` prefix to the password hash in
+`/etc/shadow`. Unlocking removes it.
 
-- When new user's home is created, files from `/etc/skel` are copied into it
-- Skel files are usually dotfiles — use `ls -Al /etc/skel` to list them
-- Add files to /etc/skel to give every new user the same starting files
-- Typical contents: `.bashrc`, `.bash_profile`, `.bash_logout`
+---
 
-## 🔍 Verifying Users and Groups
+## The Skeleton Directory
+
+When a new user's home directory is created, Linux copies the
+contents of `/etc/skel` into it. This gives every new user a
+consistent starting environment. The directory typically contains
+dotfiles such as `.bashrc`, `.bash_profile`, and `.bash_logout`:
 
 ```bash
-id frank                      # show UID, GID, groups for frank
-groups frank                  # show groups frank belongs to
-grep frank /etc/passwd        # check passwd entry
-grep frank /etc/group         # check group memberships
+ls -Al /etc/skel
 ```
 
-## 📄 /etc/shadow — Key Fields Reference
+Adding files to `/etc/skel` before creating users ensures every
+subsequent user receives those files automatically.
 
-| Field              | Meaning                                         | Example     |
-|--------------------|-------------------------------------------------|-------------|
-| Field 3 (LASTCHANGE)| Days since epoch of last password change. 0 = must change now | 18029 |
-| Field 4 (MINAGE)   | Min days between password changes               | 0           |
-| Field 5 (MAXAGE)   | Max days before password must change            | 90          |
-| Field 6 (WARN)     | Days of warning before expiry                   | 7           |
-| Field 7 (INACTIVE) | Days after expiry before account disabled       | 30          |
-| Field 8 (EXPDATE)  | Account expiration date (days since epoch)      | empty=never |
+---
 
-- LASTCHANGE = 0 → user must change password at next login
-- Password starting with `!` → account locked
+## Verifying Users and Groups
 
-## 📁 File Permissions Summary
+```bash
+id frank               # show UID, GID, and group memberships
+groups frank           # show groups frank belongs to
+grep frank /etc/passwd # check the passwd entry
+grep frank /etc/group  # check group memberships
+```
 
-| File          | Permissions  | Readable by                  |
-|---------------|--------------|------------------------------|
-| /etc/passwd   | -rw-r--r--   | Everyone                     |
-| /etc/group    | -rw-r--r--   | Everyone                     |
-| /etc/shadow   | -rw-r-----   | Root only (+ shadow group)   |
-| /etc/gshadow  | -rw-r-----   | Root only (+ shadow group)   |
+---
 
-## 📋 Complete Command Reference
+## The /etc/shadow Fields
 
-| Command    | Purpose                                      |
-|------------|----------------------------------------------|
-| `useradd`  | Create a new user account                    |
-| `userdel`  | Delete a user account                        |
-| `groupadd` | Create a new group                           |
-| `groupdel` | Delete a group                               |
-| `passwd`   | Set/change password, lock/unlock accounts    |
-| `id`       | Show UID, GID and group memberships          |
-| `groups`   | Show groups a user belongs to                |
-| `chsh`     | Change login shell                           |
-| `chfn`     | Change GECOS field info                      |
+Each line in `/etc/shadow` has eight colon-separated fields:
 
-## 🔑 Key Takeaways
+| Field | Name | Meaning |
+|-------|------|---------|
+| 3 | LASTCHANGE | Days since epoch of last password change. 0 means must change now |
+| 4 | MINAGE | Minimum days between password changes |
+| 5 | MAXAGE | Maximum days before password must be changed |
+| 6 | WARN | Days of warning before expiry |
+| 7 | INACTIVE | Days after expiry before account is disabled |
+| 8 | EXPDATE | Account expiration date. Empty means never |
 
-- useradd creates user — always use passwd immediately after to set password
-- New accounts are locked until a password is set
-- userdel -r removes user AND home directory — without -r keeps home
-- groupadd -g sets specific GID, groupdel removes group
-- Cannot delete a group that is someone's primary group
-- Primary/secondary groups must exist before running useradd
-- /etc/skel = template files copied to new user's home directory
-- LASTCHANGE = 0 in shadow → user must change password next login
-- ! prefix in shadow password field → account is locked
-- /etc/passwd and /etc/group are world-readable
-- /etc/shadow and /etc/gshadow are root-only readable
-- passwd command has SUID bit — runs as root for any user
-- Never edit /etc/passwd, /etc/shadow etc. directly — use the commands
+---
+
+## File Permission Summary
+
+| File | Permissions | Readable by |
+|------|-------------|-------------|
+| `/etc/passwd` | -rw-r--r-- | Everyone |
+| `/etc/group` | -rw-r--r-- | Everyone |
+| `/etc/shadow` | -rw-r----- | Root and shadow group only |
+| `/etc/gshadow` | -rw-r----- | Root and shadow group only |
+
+---
+
+## What I Found Difficult
+
+Write one or two honest sentences about what genuinely took longer
+to understand. Be specific about what confused you and how it clicked.
+
+---
+
+## Questions Still Open
+
+Anything you want to verify or follow up on later.
