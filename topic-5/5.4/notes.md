@@ -1,131 +1,139 @@
-# 📓 Topic 5.4 — Special Directories and Files
+# Topic 5.4 — Special Directories and Files
 
-**Course:** LPI Linux Essentials (010-160) · **Date:** May 8, 2026 · **Status:** ✅ Complete
+**Date:** 2026-05-19  
+**Status:** Complete
 
-## 📁 Temporary File Directories
+---
 
-| Directory    | Cleared on boot?          | Purpose                                              |
-|--------------|---------------------------|------------------------------------------------------|
-| `/tmp`       | Usually yes (recommended) | Short-lived temp files — not preserved between runs  |
-| `/var/tmp`   | ❌ No — persists           | Temp files that need to survive reboots              |
-| `/run`       | ✅ Yes — always cleared    | Runtime data — PID files, sockets for running procs  |
+## Temporary File Directories
 
-- `/var/run` may be a symlink to `/run` on modern systems
-- Both `/tmp` and `/var/tmp` use the **sticky bit** — users can only delete their own files
+Linux provides three directories for temporary and runtime data,
+each with different persistence behavior:
+
+| Directory | Cleared on boot | Purpose |
+|-----------|-----------------|---------|
+| `/tmp` | Usually yes | Short-lived files not needed between runs |
+| `/var/tmp` | No | Temporary files that must survive reboots |
+| `/run` | Always | Runtime data such as PID files and sockets |
+
+On modern systems `/var/run` is typically a symlink pointing to
+`/run`. Both `/tmp` and `/var/tmp` have the sticky bit set, which
+means any user can write files there but only the file's owner can
+delete them:
 
 ```bash
 ls -ldh /tmp /var/tmp
-# drwxrwxrwt — the t = sticky bit set
 ```
 
-## 🔗 Links — Two Types
+The `t` at the end of the permission string confirms the sticky bit
+is active.
 
-| Feature                  | Hard Link                     | Symbolic (Soft) Link             |
-|--------------------------|-------------------------------|----------------------------------|
-| Points to                | Same inode (same data)        | Path/name of another file        |
-| Works across filesystems?| ❌ No — same filesystem only  | ✅ Yes — any filesystem          |
-| Can link to directories? | ❌ No — files only            | ✅ Yes                           |
-| If target deleted        | Data still accessible         | Link breaks (dangling link)      |
-| Increases link count?    | ✅ Yes                        | ❌ No                            |
-| ls -l first char         | `-` (looks like regular file) | `l`                              |
-| Inode                    | Same inode as target          | Different inode from target      |
+---
 
-## 🔧 Creating Links — ln command
+## Hard Links and Symbolic Links
+
+Linux provides two types of links for referencing files. They work
+differently at the filesystem level and have different limitations.
+
+| Feature | Hard link | Symbolic link |
+|---------|-----------|---------------|
+| Points to | The inode directly | A file path |
+| Works across filesystems | No | Yes |
+| Can link to directories | No | Yes |
+| If target is deleted | Data remains accessible | Link breaks |
+| Increases link count | Yes | No |
+| First character in ls -l | `-` | `l` |
+| Inode | Same as target | Different from target |
+
+A hard link is a second directory entry pointing to the same inode
+as the original file. Because both entries point to the same
+underlying data, deleting one does not remove the data until every
+hard link to that inode is removed. The link count in `ls -l` output
+tracks how many hard links point to a given inode.
+
+A symbolic link is a separate file that contains a path to another
+file or directory. If the target is moved or deleted, the symbolic
+link breaks and becomes a dangling link. Symbolic links work across
+filesystem boundaries because they reference a path, not an inode.
+
+---
+
+## Creating Links with ln
 
 ```bash
 # Hard link
-ln target.txt hardlink            # create hard link in current dir
-ln target.txt /path/to/hardlink   # create hard link at specific path
+ln target.txt hardlink
+ln target.txt /path/to/hardlink
 
-# Soft link
-ln -s target.txt softlink                    # relative path (risky if moved)
-ln -s /full/path/to/target.txt softlink      # absolute path (safe, recommended)
+# Symbolic link
+ln -s /full/path/to/target.txt softlink
 ```
 
-- Always use absolute paths for symbolic links — prevents broken links if moved
-- If LINK_NAME is omitted, link created with same name as target in current dir
+Always use absolute paths when creating symbolic links. A relative
+path works from the location where the link was created, but if the
+link is ever moved to a different directory it will break because the
+relative path no longer resolves correctly. An absolute path works
+regardless of where the link lives.
 
-## 🔍 Identifying Links with ls
+If the link name is omitted, `ln` creates a link with the same name
+as the target in the current directory.
+
+---
+
+## Identifying Links with ls
 
 ```bash
-ls -l       # l = symlink, shows -> target
-ls -li      # -i shows inode number (same inode = hard link)
+ls -l     # shows l as first character for symlinks and the target path
+ls -li    # adds inode number as first column
 ```
 
-```
-# Example output:
-3806696 -r--r--r-- 2 carol carol 111702 target.txt    ← same inode
-3806696 -r--r--r-- 2 carol carol 111702 hardlink       ← same inode = hard link
-5388837 lrwxrwxrwx 1 carol carol     12 softlink -> target.txt   ← l = symlink
-```
+Example output showing both link types:
+3806696 -r--r--r-- 2 carol carol 111702 target.txt
+3806696 -r--r--r-- 2 carol carol 111702 hardlink
+5388837 lrwxrwxrwx 1 carol carol     12 softlink -> target.txt
 
-- Same inode number = hard link
-- Link count (2nd column) = number of hard links pointing to file
-- Every file starts with link count of 1; each hard link adds 1
+The first column is the inode number. `target.txt` and `hardlink`
+share inode `3806696`, which confirms they are hard links to the
+same data. The link count of `2` in the third column reflects this.
+`softlink` has a different inode and shows `l` as its file type,
+confirming it is a symbolic link.
 
-## 🗑️ Moving and Removing Links
+---
+
+## Moving and Removing Links
 
 ```bash
 rm softlink           # remove a link
 mv softlink newname   # rename a link
-mv softlink /newpath  # move a link
+mv softlink /newpath  # move a link to a new location
 ```
 
-- Hard links can be moved freely — they point to inodes not paths
-- Symbolic links with relative paths break if moved from original location
-- Symbolic links with absolute paths work regardless of where moved
+Hard links can be moved freely because they point directly to an
+inode rather than a path. Symbolic links with relative paths will
+break if moved. Symbolic links with absolute paths continue to work
+regardless of where they are moved.
 
-## ⚠️ Hard Link Limitations
+---
 
-- Cannot hard link across different filesystems/partitions — error: "Invalid cross-device link"
-- Cannot hard link to directories
-- Use symbolic links when crossing filesystem boundaries
+## Symlink Permissions
 
-## 📋 Symlink Permissions
+Symbolic links always display `lrwxrwxrwx` in `ls -l` output. These
+permissions belong to the link itself and are irrelevant. The actual
+access permissions that apply when you read, write, or execute
+through the symlink come from the target file.
 
-- Symlinks always show `lrwxrwxrwx` in ls -l
-- Actual access permissions are inherited from the **target file**
-- The permissions shown on the symlink itself are irrelevant
+---
 
-## 🏗️ inode Explained
+## Inodes
 
-- inode = data structure storing file attributes (name, permissions, owner, disk location)
-- Think of it as an index entry — "index node"
-- Hard links point to the same inode → same data on disk
-- Deleting a file removes the directory entry but data remains until link count = 0
+An inode is a data structure that stores a file's metadata:
+permissions, owner, group, timestamps, and the disk locations of the
+file's data blocks. The filename is not stored in the inode. It is
+stored in the directory entry that points to the inode. This
+separation is what makes hard links possible. Multiple directory
+entries, each with a different name, can point to the same inode and
+therefore the same data on disk.
 
-## 📋 Practical Examples
-
-```bash
-# Create hard link
-ln /home/carol/docs/report.txt report_link.txt
-
-# Create symbolic link — ALWAYS use absolute path
-ln -s /home/carol/docs/report.txt report_symlink.txt
-
-# Check inode numbers (same = hard link)
-ls -li
-
-# Set sticky bit on a directory
-chmod +t /my/temp/dir
-chmod 1755 /my/temp/dir
-
-# Verify sticky bit
-ls -ld /tmp       # drwxrwxrwt — t = sticky bit
-```
-
-## 🔑 Key Takeaways
-
-- /tmp = cleared on boot (usually), short-lived temp files
-- /var/tmp = persists across reboots, longer-lived temp files
-- /run = always cleared on boot, runtime PID files and sockets
-- Both /tmp and /var/tmp have sticky bit set (drwxrwxrwt)
-- Sticky bit = only file owner can delete their files in the directory
-- Hard links = same inode, same filesystem only, files only, increases link count
-- Soft links = point to a path, work across filesystems, can link dirs, l in ls
-- If target of soft link deleted → link breaks. Hard link still works.
-- Always use absolute paths when creating symbolic links
-- ln = hard link, ln -s = symbolic link
-- ls -li shows inode numbers — same inode = hard link
-- Symlink permissions always show rwxrwxrwx — actual permissions come from target
-- Cannot create hard links across different filesystems — use symlinks instead
+When a file is deleted, the directory entry is removed and the link
+count decreases by one. The actual data on disk is only released when
+the link count reaches zero.
