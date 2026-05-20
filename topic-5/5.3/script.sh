@@ -30,7 +30,7 @@ echo ""
 # ls -lh shows human readable sizes.
 # ls -la includes hidden files.
 
-echo "--- Section 1: Reading ls -l output ---"
+echo "--- Reading ls -l output ---"
 echo ""
 
 echo "Long listing of test file:"
@@ -53,7 +53,7 @@ echo ""
 # Symbolic mode lets you modify one permission at a time.
 # Useful when you want to add or remove without affecting the rest.
 
-echo "--- Section 2: chmod symbolic mode ---"
+echo "--- chmod symbolic mode ---"
 echo ""
 
 echo "Starting permissions:"
@@ -82,7 +82,7 @@ echo ""
 # Numeric mode sets all three permission groups at once.
 # Each digit is the sum of r=4, w=2, x=1 for that group.
 
-echo "--- Section 3: chmod numeric mode ---"
+echo "--- chmod numeric mode ---"
 echo ""
 
 chmod 755 $TEST_FILE
@@ -107,7 +107,7 @@ echo ""
 # Linux checks owner first, then group, then others.
 # The first matching category applies. The rest are ignored.
 
-echo "--- Section 4: Permission check order ---"
+echo "--- Permission check order ---"
 echo ""
 
 chmod 044 $TEST_FILE
@@ -129,7 +129,7 @@ chmod 644 $TEST_FILE
 # chown changes ownership. chgrp changes group ownership.
 # Only root can change ownership to another user.
 
-echo "--- Section 5: Ownership inspection ---"
+echo "--- Ownership inspection ---"
 echo ""
 
 echo "Current ownership of test file:"
@@ -162,7 +162,7 @@ echo ""
 # Special permissions -------------------------------------------
 # Sticky bit, SGID, and SUID extend the standard permission model.
 
-echo "--- Section 6: Special permissions ---"
+echo "--- Special permissions ---"
 echo ""
 
 # Sticky bit on a directory
@@ -207,7 +207,7 @@ echo ""
 # Uppercase S and T ---------------------------------------------
 # Uppercase S or T means the special bit is set but execute is absent.
 
-echo "--- Section 7: Uppercase S and T ---"
+echo "--- Uppercase S and T ---"
 echo ""
 
 chmod 0644 $TEST_FILE
