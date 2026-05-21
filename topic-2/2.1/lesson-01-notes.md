@@ -1,6 +1,6 @@
 # Topic 2.1 Lesson 1 — Command Line Basics: The Shell and Quoting
 
-**Date:** 2026-05-06  
+**Date:** 2026-05-08  
 **Status:** Complete
 
 ---
