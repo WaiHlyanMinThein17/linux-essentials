@@ -1,94 +1,94 @@
-# 📓 Topic 1.2 — Linux Applications and Tools
+# Topic 1.2 — Major Open Source Applications
 
-**Course:** LPI Linux Essentials (010-160) · **Date:** May 5, 2026 · **Status:** ✅ Complete
+**Date:** 2026-05-05  
+**Status:** Complete
 
-## 📦 Package Management
+---
 
-### Debian/Ubuntu (DEB packages)
-| Command          | Purpose                                          |
-|------------------|--------------------------------------------------|
-| dpkg             | Low-level package management                     |
-| apt-get          | High-level package management (older)            |
-| apt              | High-level package management (newer, preferred) |
-| apt-cache search | Search for packages                              |
-| apt install      | Install a package                                |
-| apt remove       | Remove package (keeps config files)              |
-| apt purge        | Remove package AND config files                  |
+## Package Management
 
-### Red Hat/Fedora/CentOS (RPM packages)
-| Command | Purpose                               |
-|---------|---------------------------------------|
-| rpm     | Low-level package management          |
-| yum     | High-level package management (older) |
-| dnf     | High-level package management (newer) |
+Linux distributions handle software installation through package managers.
+The two dominant families use different package formats and tools.
 
-### Dependencies
-- A dependency is an auxiliary package needed by a program to function
-- apt automatically downloads and installs all required dependencies
+Debian-based distributions use `.deb` packages. The low-level tool is
+`dpkg`, but in practice most work is done through `apt`, which handles
+dependency resolution automatically. `apt install` adds a package, `apt
+remove` removes it but keeps configuration files, and `apt purge` removes
+both the package and its configuration files.
 
-## 🏢 Office Applications
-- **LibreOffice** — preferred by most distros (LGPLv3 license)
-- **Apache OpenOffice** — same codebase (Apache License 2.0)
-- LibreOffice can incorporate OpenOffice improvements but NOT vice versa
+Red Hat-based distributions use `.rpm` packages managed by `rpm` at the
+low level. The higher-level tools are `yum` on older systems and `dnf` on
+newer ones. Both handle dependencies the same way `apt` does on the
+Debian side.
 
-### LibreOffice Applications
-| App     | Purpose                         |
-|---------|---------------------------------|
-| Writer  | Text documents (like Word)      |
-| Calc    | Spreadsheets (like Excel)       |
-| Impress | Presentations (like PowerPoint) |
-| Draw    | Vector drawing                  |
-| Math    | Math formulas                   |
-| Base    | Database                        |
+A dependency is an auxiliary package that a program requires in order
+to function. High-level package managers resolve and install dependencies
+automatically, which is one of the main reasons they are preferred over
+the lower-level tools.
 
-- Native format: **ODP/ODF** (Open Document Format — ISO standard)
-- Compatible with Microsoft Office formats
+---
 
-## 🌐 Web Browsers
-- **Firefox** — maintained by Mozilla (non-profit)
-- **Chromium** — open source base for Google Chrome
-- **Thunderbird** — Mozilla email client
+## Office and Productivity
 
-## 🎬 Multimedia
-| App         | Purpose                                             |
-|-------------|-----------------------------------------------------|
-| Blender     | 3D rendering and animation                          |
-| GIMP        | Bitmap image editor (like Photoshop)                |
-| Inkscape    | Vector graphics editor (like Illustrator), uses SVG |
-| Audacity    | Audio editor                                        |
-| ImageMagick | Command-line image conversion tool                  |
-| VLC         | Video playback                                      |
+LibreOffice is the standard office suite on most Linux distributions,
+released under the LGPLv3 license. Its applications map closely to the
+Microsoft Office equivalents: Writer for documents, Calc for spreadsheets,
+Impress for presentations, Draw for vector graphics, Math for formulas,
+and Base for databases. LibreOffice saves in the Open Document Format
+(ODF), an ISO standard, though it can also read and write Microsoft
+Office formats.
 
-## 🖥️ Server Programs
-- **Apache, Nginx, lighttpd** — HTTP servers
-- **MariaDB, PostgreSQL** — open source relational databases
-- **LAMP** = Linux + Apache + MySQL/MariaDB + PHP
-- **NFS** — file sharing between Linux machines
-- **Samba** — file sharing between Linux AND Windows machines
+Apache OpenOffice shares the same original codebase as LibreOffice but
+is released under the Apache License 2.0. The key practical difference
+is that LibreOffice can incorporate improvements from OpenOffice, but
+the reverse is not possible due to license incompatibility.
 
-## 🌐 Network Administration
-| Protocol | Purpose                                       |
-|----------|-----------------------------------------------|
-| DHCP     | Automatically assigns IP addresses to devices |
-| DNS      | Translates domain names to IP addresses       |
+---
 
-## 💻 Programming Languages
-| Language   | Type                       | Use case                            |
-|------------|----------------------------|-------------------------------------|
-| C          | Compiled                   | Systems programming, OS development |
-| Java       | Compiled (to bytecode/JVM) | Portable applications               |
-| Python     | Interpreted                | General purpose, easy to learn      |
-| JavaScript | Interpreted                | Web browser scripting               |
-| PHP        | Interpreted                | Server-side web scripting           |
-| Perl       | Interpreted                | Text processing, regex              |
-| Shell/Bash | Interpreted                | Command line automation             |
+## Web and Multimedia
 
-## 🔑 Key Takeaways
-- Debian = apt/dpkg, Red Hat = yum/dnf/rpm
-- apt purge removes config files too; apt remove does not
-- LibreOffice Impress = presentations, Calc = spreadsheets, Writer = documents
-- Chrome is based on Chromium (open source)
-- GIMP = Photoshop equivalent, Inkscape = Illustrator equivalent
-- Samba = Linux + Windows file sharing
-- DHCP assigns IPs, DNS translates domain names
-- C and Java are compiled; Python, PHP, JS, Perl, Bash are interpreted
+Firefox is the primary open source web browser on Linux, maintained by
+the Mozilla Foundation. Chromium is the open source project that forms
+the basis of Google Chrome. Thunderbird, also from Mozilla, is the
+standard open source email client.
+
+For creative work, GIMP is the bitmap image editor equivalent to
+Photoshop, and Inkscape is the vector graphics editor equivalent to
+Illustrator. It uses SVG as its native format. Blender handles 3D
+modelling, rendering, and animation. Audacity covers audio editing.
+For format conversion from the command line, ImageMagick processes
+images and VLC handles video playback.
+
+---
+
+## Server Software
+
+The most common HTTP servers on Linux are Apache, Nginx, and lighttpd.
+For databases, MariaDB and PostgreSQL are the dominant open source
+relational databases. The LAMP stack, Linux, Apache, MySQL or MariaDB,
+and PHP, remains a widely deployed combination for web applications.
+
+File sharing between Linux machines is handled by NFS. Samba extends
+this to Windows machines, allowing Linux and Windows systems to share
+files and printers across the same network.
+
+---
+
+## Networking Services
+
+DHCP automatically assigns IP addresses to devices joining a network,
+eliminating the need for manual configuration. DNS translates human-readable
+domain names into IP addresses. Both are fundamental infrastructure
+services that a Linux administrator is expected to understand.
+
+---
+
+## Programming Languages
+
+The languages most relevant to Linux administration and development
+fall into two categories. Compiled languages such as C and Java are
+converted to machine code or bytecode before execution, which makes
+them faster at runtime. Interpreted languages such as Python, PHP,
+JavaScript, Perl, and Bash are executed line by line at runtime,
+which makes them slower but easier to develop and debug quickly.
+Shell scripting in Bash is a daily tool for any Linux administrator.
