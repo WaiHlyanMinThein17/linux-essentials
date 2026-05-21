@@ -1,6 +1,6 @@
 # Topic 2.1 Lesson 2 — Command Line Basics: Variables and PATH
 
-**Date:** 2026-05-06  
+**Date:** 2026-05-08  
 **Status:** Complete
 
 ---
