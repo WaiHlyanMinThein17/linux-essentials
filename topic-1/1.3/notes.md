@@ -1,77 +1,83 @@
-# 📓 Topic 1.3 — Open Source Software and Licensing
+# Topic 1.3 — Open Source Software and Licensing
 
-**Course:** LPI Linux Essentials (010-160) · **Date:** May 5, 2026 · **Status:** ✅ Complete
+**Date:** 2026-05-05  
+**Status:** Complete
 
-## 🕊️ Free Software — The Four Freedoms
-Richard Stallman's definition — "free as in free speech, not free beer"
+---
 
-| Freedom   | Description                                  |
-|-----------|----------------------------------------------|
-| Freedom 0 | Run the program as you wish, for any purpose |
-| Freedom 1 | Study and modify the source code             |
-| Freedom 2 | Redistribute copies to help others           |
-| Freedom 3 | Distribute modified versions to others       |
+## What is Open Source?
 
-- Freedoms 1 and 3 both require access to the source code
-- Software without these freedoms = **proprietary software**
+Open source software is software whose source code is publicly available
+for anyone to inspect, modify, and distribute. The term was coined in
+1998 by Christine Peterson and formalized by the Open Source Initiative
+(OSI), which defines what qualifies as genuinely open source through its
+Open Source Definition.
 
-## 📖 Free Software vs Open Source
-|              | Free Software                            | Open Source                             |
-|--------------|------------------------------------------|-----------------------------------------|
-| Focus        | Social/political movement — user freedom | Pragmatic/technical — visible code      |
-| Founded by   | Richard Stallman (GNU Project, 1985)     | Eric Raymond & Bruce Perens (OSI, 1998) |
-| Abbreviation | FOSS or FLOSS                            | OSS                                     |
+Free software is a related but distinct concept defined by Richard
+Stallman and the Free Software Foundation (FSF). The FSF uses the word
+"free" to mean freedom, not price. A piece of software is free in this
+sense if it grants users four specific freedoms: the freedom to run it
+for any purpose, to study how it works, to share copies, and to publish
+modified versions. These four freedoms are numbered 0 through 3.
 
-- **FOSS** = Free and Open Source Software
-- **FLOSS** = Free/Libre and Open Source Software (adds "Libre" to clarify freedom, not price)
+The two movements share most of the same values in practice, which is
+why the combined term FOSS (Free and Open Source Software) is widely
+used to refer to both.
 
-## 📜 Licenses
+---
 
-### Copyleft Licenses
-- Require modified versions to be distributed under the same free license
-- Called "viral" — the license spreads to all derivatives
-- Examples:
-  - **GNU GPL** (General Public License) — used by Linux kernel
-  - **GNU LGPL** (Lesser GPL) — allows linking with non-free components
-  - **GNU AGPL** (Affero GPL) — covers hosted/cloud software
-  - **CC BY-SA** — Creative Commons ShareAlike
+## Licenses
 
-### Permissive Licenses
-- Allow modified versions to be released under ANY license including proprietary
-- Maximum freedom for users of the code
-- Examples:
-  - **2-Clause BSD License** (Simplified BSD / FreeBSD License)
-  - **MIT License**
-  - **Apache License 2.0**
-  - **CC BY** — Creative Commons Attribution only
+A software license defines what users are permitted to do with the
+software. Open source licenses fall into two broad categories: copyleft
+and permissive.
 
-## 🎨 Creative Commons Licenses
-| License     | Permissions                                                    |
-|-------------|----------------------------------------------------------------|
-| CC BY       | Attribution only — most permissive                             |
-| CC BY-SA    | Attribution + ShareAlike (copyleft-like)                       |
-| CC BY-ND    | Attribution + No Derivatives                                   |
-| CC BY-NC    | Attribution + NonCommercial                                    |
-| CC BY-NC-SA | Attribution + NonCommercial + ShareAlike                       |
-| CC BY-NC-ND | Attribution + NonCommercial + NoDerivatives — most restrictive |
+Copyleft licenses require that any derivative work be released under
+the same license. The most important copyleft license is the GNU General
+Public License (GPL). Linux uses GPLv2. The LGPL (Lesser GPL) is a
+weaker form that allows proprietary software to link against a library
+without the copyleft requirement applying to the proprietary code.
 
-- Wikipedia uses **CC BY-SA**
+Permissive licenses impose minimal restrictions. The MIT License, BSD
+License, and Apache License 2.0 all allow the software to be used in
+proprietary products without requiring the source to be released. The
+main practical difference between them is how they handle attribution
+and patent grants.
 
-## 💰 FOSS Business Models
-| Model                 | Description                                      | Example              |
-|-----------------------|--------------------------------------------------|----------------------|
-| Professional services | Sell enterprise support, consulting, maintenance | Canonical, Red Hat   |
-| Dual licensing        | Free license + paid proprietary license          | MySQL, ownCloud      |
-| SaaS                  | Pay to use software via subscription             | Dropbox, Salesforce  |
-| Crowdfunding          | Collect donations for development                | Kickstarter projects |
-| Merchandising         | Sell branded products/certifications             | Moodle               |
+Creative Commons licenses are used primarily for content rather than
+software, such as documentation, images, and datasets. CC BY-SA requires
+attribution and share-alike, meaning derivatives must use the same
+license. Wikimedia and Wikipedia use CC BY-SA. The CC0 license places
+a work in the public domain with no restrictions.
 
-## 🔑 Key Takeaways
-- "Free" = freedom, not price — you can sell free software
-- Four freedoms numbered 0-3 (starts at zero!)
-- Freedoms 1 and 3 require source code access
-- Copyleft = license spreads to derivatives (GPL)
-- Permissive = no restrictions on derivatives (BSD, MIT)
-- Linux kernel uses GNU GPL
-- FLOSS adds "Libre" to clarify freedom across languages
-- Canonical's business model = professional services
+---
+
+## Business Models Around Open Source
+
+Releasing software under an open source license does not prevent a
+company from building a sustainable business. Several models have
+emerged that allow companies to fund development while keeping the
+core software free.
+
+Canonical publishes Ubuntu under open source licenses but generates
+revenue through support contracts, managed services, and enterprise
+products such as Ubuntu Advantage. Red Hat uses a similar model with
+RHEL, providing paid support and certification for a distribution whose
+source code is publicly available. This is sometimes called the
+professional services model.
+
+The dual licensing model allows a company to release software under
+both an open source license and a commercial license. Users who need
+to keep their modifications private can purchase the commercial license
+to avoid the copyleft requirement.
+
+---
+
+## Open Standards
+
+An open standard is a technical specification that is publicly available
+and not controlled by any single vendor. Open standards ensure
+interoperability, meaning that software from different vendors can work
+together reliably. The Open Document Format (ODF) used by LibreOffice
+is an ISO-ratified open standard for office documents. HTML and TCP/IP
+are further examples of open standards that underpin the modern internet.
