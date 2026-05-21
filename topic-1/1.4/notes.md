@@ -1,93 +1,107 @@
-# 📓 Topic 1.4 — ICT Skills and Working in Linux
+# Topic 1.4 — ICT Skills and Working in Linux
 
-**Course:** LPI Linux Essentials (010-160) · **Date:** May 5, 2026 · **Status:** ✅ Complete
+**Date:** 2026-05-06  
+**Status:** Complete
 
-## 🖥️ Desktop Environments
-| Environment | Toolkit           | Philosophy                       |
-|-------------|-------------------|----------------------------------|
-| GNOME       | GTK (C language)  | KISS — Keep It Simple Stupid     |
-| KDE         | Qt (C++ language) | Maximum customization, more apps |
+---
 
-- GNOME terminal = **GNOME Terminal**
-- KDE terminal = **Konsole**
-- Virtual TTY = non-graphical terminal, accessed with **Ctrl+Alt+F1-F7**
+## The Command Line Interface
 
-## ☁️ Cloud Computing Models
-| Model | Full Name                   | What you get                              | Example             |
-|-------|-----------------------------|-------------------------------------------|---------------------|
-| IaaS  | Infrastructure as a Service | Virtual machines — you manage the OS      | AWS EC2             |
-| PaaS  | Platform as a Service       | Platform to deploy apps, no OS management | Heroku              |
-| SaaS  | Software as a Service       | Ready-to-use software via subscription    | Dropbox, Salesforce |
+The command line interface (CLI) is the primary way of interacting with
+a Linux system, particularly in server and administrative contexts. Unlike
+a graphical interface, the CLI accepts typed commands and returns text
+output. This makes it well suited to automation, remote access, and
+working on systems with no graphical environment installed.
 
-## 🖥️ Hypervisors (Virtualization)
-| Hypervisor | Notes                                                                    |
-|------------|--------------------------------------------------------------------------|
-| KVM        | Most prominent Linux hypervisor, sponsored by Red Hat, built into kernel |
-| Xen        | Oldest Linux hypervisor                                                  |
-| VirtualBox | Oracle-owned, easiest for end users                                      |
+The shell is the program that reads your commands and passes them to the
+operating system. Bash (Bourne Again Shell) is the default shell on most
+Linux distributions. Other shells exist, including Zsh, Fish, and the
+original Bourne Shell (sh), but Bash is what you will encounter in the
+vast majority of real environments.
 
-- **OpenStack** — collection of open source software for building private IaaS cloud environments
+A terminal emulator is the application that provides a window for the
+shell to run inside. On a desktop system this might be GNOME Terminal
+or Konsole. On a headless server you connect directly to a virtual
+console or over SSH.
 
-## 🔏 Privacy
-### Cookie Tracking
-- Cookies = small files websites save on your computer to track you
-- Ad networks use third-party cookies to track you across websites
-- Solution: block third-party cookies or use a cookie manager
+---
 
-### Do Not Track (DNT)
-- Sends HTTP header flag (DNT: 1) requesting websites not to track you
-- NOT guaranteed — websites can ignore it
-- Just a polite request, not technical protection
+## Files and the Filesystem
 
-### Private/Incognito Mode
-- Protects: leaves no trace on LOCAL computer (deletes history, cookies, passwords on close)
-- Does NOT protect: online anonymity — websites and ISPs can still track you
-- Best used on public computers
+Linux organizes everything as files. Configuration, hardware devices,
+running processes, and network sockets all appear as files somewhere
+in the filesystem. This consistency is one of the defining properties
+of Unix-like systems.
 
-## 🔑 Passwords
-- Never reuse passwords — credential stuffing attacks
-- Use a password manager
+The filesystem starts at the root directory, written as `/`. Everything
+else is mounted below it. This is different from Windows, which assigns
+a separate letter to each drive. On Linux, an additional drive is mounted
+at a path like `/mnt/data` and appears as a directory, not a separate
+letter.
 
-| Manager   | Storage              | Notes                                 |
-|-----------|----------------------|---------------------------------------|
-| KeePass   | Local encrypted file | More control, open source             |
-| Bitwarden | Cloud server         | Easy sync, can self-host, open source |
+Files whose names begin with a dot are hidden. They will not appear in
+a standard directory listing but can be revealed with `ls -a`. This
+convention is used for configuration files in home directories, such
+as `.bashrc` and `.bash_profile`.
 
-## 🔐 Encryption
-### TLS (Transport Layer Security)
-- Encrypts network connections
-- Used in **HTTPS** protocol
-- Look for padlock in browser = TLS is active
-- Successor to SSL (deprecated)
+---
 
-### GnuPG (GNU Privacy Guard)
-- Signs, encrypts and decrypts files, emails and directories
-- Uses public-key cryptography
-- Public key = share with everyone
-- Private key = keep secret
+## Working Remotely with SSH
 
-### Disk Encryption
-| Tool      | Method                        | Notes                                                                      |
-|-----------|-------------------------------|----------------------------------------------------------------------------|
-| dm-crypt  | Block device encryption       | Everything encrypted below filesystem, de-facto Linux standard, needs root |
-| EncFS     | Stacked filesystem encryption | Files encrypted on top of existing filesystem, no root needed              |
-| VeraCrypt | Block encryption              | Cross-platform (Linux, macOS, Windows)                                     |
+SSH (Secure Shell) is the standard protocol for connecting to a remote
+Linux system securely over a network. It encrypts all traffic between
+the client and the server. The basic command is:
 
-## 🎯 Presentation Tools
-| Tool                | Type               | Notes                               |
-|---------------------|--------------------|-------------------------------------|
-| LibreOffice Impress | GUI                | Default, compatible with PowerPoint |
-| Beamer              | Code (LaTeX)       | For scientific/math presentations   |
-| Reveal.js           | Code (HTML/CSS/JS) | Beautiful web-based presentations   |
+```bash
+ssh username@hostname
+```
 
-## 🔑 Key Takeaways
-- GNOME = GTK = simple; KDE = Qt = customizable
-- Virtual TTY = Ctrl+Alt+F1-F7
-- IaaS = VMs, PaaS = platform, SaaS = software subscription
-- KVM = most prominent Linux hypervisor (Red Hat)
-- OpenStack = private IaaS cloud platform
-- Private mode = local privacy only, NOT online anonymity
-- DNT = unreliable, just a request
-- dm-crypt = block encryption (everything), EncFS = file encryption (stacked)
-- TLS = network encryption (HTTPS), GnuPG = file/email encryption
-- Use a password manager — never reuse passwords
+SSH can also transfer files using `scp` for simple copies and `sftp`
+for an interactive session. Key-based authentication, where a
+cryptographic key pair replaces a password, is preferred in production
+environments because it is both more secure and more convenient for
+automation.
+
+---
+
+## Privacy, Encryption, and Security Basics
+
+Encryption converts readable data into an unreadable form that can only
+be reversed with the correct key. It is used to protect data in transit
+(such as HTTPS and SSH) and data at rest (such as encrypted disk
+partitions).
+
+Hashing is a related but distinct concept. A hash function converts
+input data into a fixed-length string. Unlike encryption, hashing is
+a one-way process: you cannot recover the original input from the hash.
+Linux uses hashing to store passwords in `/etc/shadow`. The stored hash
+is compared against a hash of the entered password at login time, so
+the original password is never stored anywhere on the system.
+
+Privacy on a shared system comes primarily from the permission system.
+Files are owned by a user and a group, and access for owner, group, and
+others is controlled separately. This prevents users from reading each
+other's files without explicit permission.
+
+---
+
+## Industry Terminology
+
+A few terms appear repeatedly in Linux and open source contexts and are
+worth understanding precisely.
+
+A server is a machine or process that provides a service to other
+machines, called clients. The client-server model describes most network
+communication, including web browsing, email, and database access.
+
+A daemon is a background process that runs continuously without direct
+user interaction. Web servers, database servers, and SSH all run as
+daemons. By convention, daemon names often end in the letter d, such
+as `sshd`, `httpd`, and `systemd`.
+
+Virtualization allows multiple operating systems to run simultaneously
+on a single physical machine. Each runs in a virtual machine (VM)
+managed by a hypervisor. Containerization is a lighter alternative
+where applications share the host OS kernel but are isolated from each
+other. Docker and Podman are common container tools. Both virtualization
+and containerization are fundamental to modern cloud infrastructure.
