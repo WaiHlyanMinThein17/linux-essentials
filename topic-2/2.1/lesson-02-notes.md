@@ -1,90 +1,118 @@
-# 📓 Topic 2.1 Lesson 2 — Variables
+# Topic 2.1 Lesson 2 — Command Line Basics: Variables and PATH
 
-**Course:** LPI Linux Essentials (010-160) · **Date:** May 7, 2026 · **Status:** ✅ Complete
+**Date:** 2026-05-06  
+**Status:** Complete
 
-## 📦 Types of Variables
+---
 
-| Type                 | Scope                            | Inherited by subprocesses? |
-|----------------------|----------------------------------|----------------------------|
-| Local variable       | Current shell only               | ❌ No                      |
-| Environment variable | Current shell + all subprocesses | ✅ Yes                     |
+## The PATH Variable
 
-- Variables are **not persistent** — lost when shell closes
-- To make permanent → add to `~/.bashrc` or `~/.bash_profile`
-- Most environment variables are in UPPERCASE (e.g. PATH, USER, HOME)
-
-## 🔧 Working with Local Variables
+When you type a command name at the shell prompt, the shell does not
+search the entire filesystem for it. Instead it looks through a specific
+list of directories in order, stopping at the first match. That list is
+stored in the `PATH` environment variable as a colon-separated string.
 
 ```bash
-greeting=hello           # create local variable (NO spaces around =)
-echo $greeting           # print value → hello
-echo greeting            # prints the word "greeting" (no $)
-bash -c 'echo $greeting' # prints nothing — subprocess can't see local var
+echo $PATH
+# /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ```
 
-## 🌍 Working with Environment Variables
+If a command is not found in any of those directories, the shell returns
+a "command not found" error. This is the most common explanation for
+that error when you know a program is installed but the shell cannot
+find it. The solution is either to call the program using its full path
+or to add its directory to `PATH`.
+
+To run a program in the current directory, you must prefix it with `./`
+because the current directory is not in `PATH` by default. This is a
+deliberate security measure: it prevents a malicious program placed in
+the current directory from shadowing a system command with the same name.
 
 ```bash
-export greeting=hello            # create + export in one step
-export greeting                  # export existing local variable
-bash -c 'echo $greeting'         # now prints hello — subprocess can see it
-env                              # display ALL environment variables
+./script.sh         # runs script.sh from the current directory
 ```
 
-## 🗑️ Removing Variables
+---
+
+## Modifying PATH
+
+You can add a directory to `PATH` for the current session by reassigning
+the variable. The convention is to include the existing value so you
+are extending rather than replacing the list.
 
 ```bash
-unset greeting    # correct — pass variable NAME (no $)
-unset $greeting   # WRONG — passes the VALUE not the name
+PATH=$PATH:/home/wai/bin
+export PATH
 ```
 
-- Never use `$` with `unset` or `export` — pass the name, not the value
+`export` makes the variable available to child processes launched from
+the current shell. Without it, the variable exists only in the current
+shell and any program you run from it will not see the updated value.
 
-## 🛣️ The PATH Variable
+To make the change permanent, add the export line to `~/.bashrc` or
+`~/.bash_profile`. The difference between the two is when they are
+read: `.bash_profile` is read at login, `.bashrc` is read each time a
+new interactive shell starts.
 
-- Most important environment variable in Linux
-- Colon-separated list of directories where Bash searches for executables
-- Order matters — first match found is executed
+---
+
+## Environment Variables
+
+Environment variables are variables that have been exported and are
+therefore available to any process spawned from the current shell.
+The shell sets several automatically at login.
 
 ```bash
-echo $PATH                    # view current PATH
-which nano                    # find where nano executable is stored
-PATH=$PATH:/home/wai/bin      # append new directory to PATH
-PATH=$PATH:$mybin             # append using another variable
+echo $HOME      # home directory of the current user
+echo $USER      # username of the current user
+echo $SHELL     # path to the current user's login shell
+echo $PWD       # current working directory
+echo $OLDPWD    # previous working directory
 ```
 
-## ⚠️ PATH Warning
-
-- Never do `PATH=/some/dir` alone — this REPLACES the entire PATH
-- Always preserve existing PATH: `PATH=$PATH:/new/dir`
-- Removing the wrong directory from PATH breaks commands
-
-## 🌐 Using Variables with Commands
+`env` prints all currently set environment variables. This is useful
+for debugging when a program behaves differently depending on its
+environment.
 
 ```bash
-TZ=EST date    # run date command with a specific timezone
-TZ=GMT date    # variables can be set inline before a command
+env             # list all environment variables
 ```
 
-## 📋 Commands Summary
+---
 
-| Command            | Purpose                                        |
-|--------------------|------------------------------------------------|
-| `var=value`        | Create local variable (no spaces around =)     |
-| `export var=value` | Create environment variable                    |
-| `export var`       | Convert local variable to environment variable |
-| `echo $var`        | Print variable value                           |
-| `unset var`        | Remove a variable (no $ sign)                  |
-| `env`              | Display all environment variables              |
-| `which command`    | Find path of an external command               |
-| `echo $PATH`       | View current PATH                              |
+## Command History
 
-## 🔑 Key Takeaways
+Bash keeps a record of previously entered commands in a history file,
+by default `~/.bash_history`. This allows you to retrieve and reuse
+commands without retyping them.
 
-- Local variables = current shell only; environment variables = subprocesses too
-- NO spaces around = when creating variables
-- Use `export` to make variables available to subprocesses
-- Use `unset` to remove variables — no $ sign
-- PATH is colon-separated — always append with `$PATH:/new/dir`
-- Variables are not persistent — add to `~/.bashrc` to make permanent
-- `which` finds external command paths; `env` shows all environment variables
+```bash
+history         # print the full command history
+!!              # repeat the last command
+!n              # repeat command number n from history
+Ctrl+R          # search history interactively
+```
+
+The up and down arrow keys cycle through recent commands one at a time.
+`Ctrl+R` opens a reverse incremental search, where you type part of a
+previous command and the shell finds the most recent match.
+
+---
+
+## Useful Shortcuts
+
+A few keyboard shortcuts significantly speed up work at the command line.
+
+```bash
+Ctrl+C          # interrupt and cancel the current command
+Ctrl+D          # send end-of-file, exits the current shell
+Ctrl+L          # clear the terminal screen
+Ctrl+A          # move cursor to beginning of line
+Ctrl+E          # move cursor to end of line
+Tab             # autocomplete command or filename
+```
+
+Tab completion is one of the most useful features of the shell. Pressing
+Tab once completes a command or filename if there is only one match.
+Pressing it twice shows all possible completions when there is more than
+one match.
