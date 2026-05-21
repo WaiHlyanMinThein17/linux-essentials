@@ -1,132 +1,97 @@
-# 📓 Topic 2.1 — Command Line Basics (Lesson 1)
+# Topic 2.1 Lesson 1 — Command Line Basics: The Shell and Quoting
 
-**Course:** LPI Linux Essentials (010-160) · **Date:** May 6, 2026 · **Status:** ✅ Complete
+**Date:** 2026-05-06  
+**Status:** Complete
 
-## 🐚 What is a Shell?
-- A program that enables text-based communication between the OS and the user
-- Reads user input and interprets it as commands
-- Most common Linux shell: **Bash** (Bourne-Again Shell)
+---
 
-### Other shells
-- C shell (csh/tcsh)
-- Korn shell (ksh)
-- Z shell (zsh)
+## The Shell
 
-## 💻 The Linux Prompt
-Structure: `username@hostname current_directory shell_type`
+The shell is a program that reads commands typed by the user and passes
+them to the operating system for execution. It also displays the output
+of those commands. Bash is the default shell on most Linux distributions
+and is the shell assumed throughout the LPI Linux Essentials curriculum.
 
-| Symbol | Meaning                       |
-|--------|-------------------------------|
-| ~      | Current user's home directory |
-| $      | Regular user                  |
-| #      | Superuser (root)              |
+When you open a terminal, the shell presents a prompt. The prompt ends
+with a dollar sign (`$`) for regular users and a hash (`#`) for root.
+This convention is universal across Linux documentation and learning
+materials and should never be changed.
 
-Examples:
-```
-carol@mycomputer:~$    ← regular user in home directory
-root@mycomputer:~#     ← root user in home directory
-```
+A command entered at the prompt follows a consistent structure: the
+command name comes first, followed by options, followed by arguments.
+Options modify the behavior of a command. Arguments tell the command
+what to act on. Some commands accept no options or arguments at all.
 
-## 📐 Command Structure
-```
-command  [option(s)]  [argument(s)]
-```
+---
 
-Example: `ls -l /home`
-| Part     | Value | Role                            |
-|----------|-------|---------------------------------|
-| Command  | ls    | Program to run                  |
-| Option   | -l    | Modifies behavior (long format) |
-| Argument | /home | Target to act on                |
+## Builtin and External Commands
 
-### Short vs Long options
-```bash
-ls -al                    # short combined
-ls -a -l                  # short separate
-ls --all --format=long    # long form
-# All three are identical!
-```
+Commands fall into two categories. Builtin commands are part of the
+shell itself and do not exist as separate programs on disk. External
+commands are standalone programs stored somewhere in the filesystem,
+typically under `/bin`, `/usr/bin`, or `/usr/sbin`.
 
-### Getting help
-```bash
-command --help    # quick overview of options
-man command       # full manual page
-```
-
-## 🔧 Command Types
-
-### Internal (Builtin) Commands
-- Part of the shell itself — no separate file exists
-- Examples: cd, echo, exit, set, export
-- Around 30 builtin commands in Bash
-
-### External Commands
-- Separate binary programs found via the PATH variable
-- Examples: ls, cat, man, git, python3
+Two commands help you identify which category a command belongs to:
 
 ```bash
-# Check command type
-type cd      # → cd is a shell builtin
-type ls      # → ls is /usr/bin/ls
-type man     # → man is /usr/bin/man
+type cd         # outputs: cd is a shell builtin
+type ls         # outputs: ls is /usr/bin/ls
+which ls        # outputs: /usr/bin/ls
 ```
 
-## 🔤 Quoting
+`cd` must be a builtin because it changes the shell's own working
+directory. An external program runs in its own process and cannot
+affect the shell's state, so it could not implement `cd` correctly.
 
-### Double Quotes " "
-- Most special characters lose their meaning
-- BUT these still work inside double quotes:
-  - `$` (variable expansion)
-  - `\` (escape character)
-  - `` ` `` (backtick/command substitution)
+---
+
+## Quoting
+
+Quoting controls how the shell interprets special characters before
+passing a command to the program. The shell processes the command line
+before the program ever sees it, which means characters like `$`, `*`,
+and spaces have meaning to the shell itself.
+
+Double quotes are weak quotes. Inside double quotes, variable expansion
+still occurs, command substitution still works, and backslash escaping
+still applies. Everything else is treated literally.
+
+Single quotes are strong quotes. Inside single quotes, every character
+is treated as a literal character with no special meaning. There is no
+way to include a single quote inside a single-quoted string.
+
+A backslash escapes a single following character, treating it as a
+literal rather than as a special character. This is useful when you
+want to include a space, dollar sign, or other special character without
+quoting an entire string.
 
 ```bash
-echo "I am $USER"    # → I am wai (variable expands)
-touch "new file"     # → creates ONE file called "new file"
+echo "$USER"        # expands the variable, prints your username
+echo '$USER'        # prints $USER literally
+echo "cost: \$5"    # backslash escapes the dollar sign
 ```
 
-### Single Quotes ' '
-- ALL special characters lose their meaning
-- Everything is treated literally
+---
+
+## Variables
+
+A variable is a named storage location for a value. Variables are
+assigned without spaces around the equals sign. Referencing a variable
+requires a dollar sign prefix.
 
 ```bash
-echo 'I am $USER'    # → I am $USER (literal, no expansion)
-touch '$TWOWORDS'    # → creates file literally named $TWOWORDS
+greeting="hello"
+echo $greeting      # prints: hello
+echo "$greeting"    # same result, but safer inside larger strings
 ```
 
-### Escape Character \
-- Removes special meaning of the NEXT character only
-- The backslash itself is not printed
+Environment variables are variables that are exported to child
+processes. The shell itself sets several automatically. `$HOME` holds
+the path to your home directory. `$USER` holds your username. `$PATH`
+is a colon-separated list of directories the shell searches when you
+type a command name without a full path.
 
 ```bash
-echo \$USER    # → $USER (literal dollar sign)
-echo \$HOME    # → $HOME
+echo $HOME          # prints your home directory path
+echo $PATH          # prints all directories searched for commands
 ```
-
-### Quick Reference
-| Method        | Variable expansion     | Space as separator          | 
-|---------------|------------------------|-----------------------------|
-| No quotes     | ✅ Yes                 | ✅ Yes (separates args)     |
-| Double quotes | ✅ Yes                 | ❌ No (treated as literal)  |
-| Single quotes | ❌ No                  | ❌ No                       |
-| Backslash     | ❌ No (next char only) | N/A                         |
-
-## ⚡ Practical Commands
-```bash
-type command      # check if builtin or external
-hostname          # show or set system hostname
-touch filename    # create empty file
-ls -l             # list directory long format
-echo "text"       # print text to terminal
-```
-
-## 🔑 Key Takeaways
-- Shell = program that interprets commands for the OS
-- Bash is the most common Linux shell
-- ~ = home directory, $ = regular user, # = root
-- Command structure: command → options → arguments
-- Short options can be combined: -al = -a -l
-- Use 'type' to check if a command is builtin or external
-- Double quotes allow variable expansion; single quotes do not
-- Backslash escapes the next character only
-- Avoid spaces in filenames — use underscores or dots instead
